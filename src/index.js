@@ -5,13 +5,13 @@ const $root = document.querySelector('#root');
 DB.update()
   .then(() => {
     $root.innerHTML = '';
-    DB.data.novel.forEach(entry => {
+    Object.values(DB.data.novel).forEach(entry => {
       const line = `
         <div>
           <strong>${entry.title}</strong>
-          by ${entry.author.map(x => x.fields.name).join(', ')}
+          by ${entry.author ? entry.author.map(x => DB.data.author[x].name).join(', ') : ''}
           <br>
-          ${entry.tags.map(x => `<span class="tag">${x.fields.tag}</span>`).join(' ')}
+          ${entry.tags ? entry.tags.map(x => `<span class="tag">${DB.data.tag[x].tag}</span>`).join(' ') : ''}
         </div>
       `;
 
