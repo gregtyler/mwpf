@@ -1,27 +1,79 @@
 /* CSS files add styling rules to your content */
 
 body {
-  font-family: helvetica, arial, sans-serif;
-  margin: 2em;
+  font-family: Lato, arial, sans-serif;
+  font-size: 18px;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+
+  background-color: hsl(213, 72%, 85%);
+  color: hsl(213, 72%, 25%);
 }
 
-h1 {
-  font-style: italic;
-  color: #373fff;
+dt { font-weight: bold; }
+dd { margin-left: 0; }
+dd + dt { margin-top: 1rem; }
+
+.c-header {
+  padding: 1rem;
 }
 
-div + div {
-  margin-top: 2rem;
+.c-header__title {
+  margin: 0;
+  font-family: 'Bodoni Moda', serif;
+  line-height: 1.2em;
+  font-weight: normal;
+  text-transform: uppercase;
 }
 
-.tag {
+.c-header__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.c-page {
+  padding: 1rem;
+}
+
+.c-page__title {
+  margin: 0 0 1rem;
+  font-size: 3rem;
+}
+
+.c-footer {
+  padding: 1rem;
+  text-align: right;
+}
+
+.c-footer__link {
+  color: hsl(0, 90%, 35%);
+}
+
+.c-tile__grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0 -1rem;
+}
+
+.c-tile__linkbase {
+  display: block;
+  padding: 1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.c-tile:hover {
+  background-color: hsla(0, 0%, 100%, 0.2);
+}
+
+.c-tag {
   display: inline-block;
   background-color: #8dc4f4;
   font-size: 0.8rem;
   padding: .3rem;
 }
 
-.tag::before {
+.c-tag::before {
   content: '#';
   opacity: 0.4;
 }

@@ -10,7 +10,9 @@ const DB = {
   cleanObject(entry) {
     const id = entry.sys.id;
     const contentType = entry.sys.contentType.sys.id;
-    const fields = {};
+    const fields = {
+      id
+    };
 
     Object.entries(entry.fields).forEach(([key, value]) => {
       const p = key.match(/^(.+)_[0-9]+$/);
@@ -45,7 +47,7 @@ const DB = {
 
     allEntries.items.forEach((entry) => {
       const {contentType, id, fields} = this.cleanObject(entry)
-      if (typeof this.data[contentType] === 'undefined') this.data[contentType] = [];
+      if (typeof this.data[contentType] === 'undefined') this.data[contentType] = {};
 
       this.data[contentType][id] = fields;
     });
