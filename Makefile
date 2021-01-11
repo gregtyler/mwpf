@@ -1,0 +1,2 @@
+up:
+	npx serve
