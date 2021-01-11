@@ -10,9 +10,13 @@ body {
   color: hsl(213, 72%, 25%);
 }
 
-dt { font-weight: bold; }
-dd { margin-left: 0; }
-dd + dt { margin-top: 1rem; }
+a {
+  color: hsl(213, 72%, 15%);
+}
+
+a:hover {
+  text-decoration: none;
+}
 
 .c-header {
   padding: 1rem;
@@ -97,4 +101,19 @@ dd + dt { margin-top: 1rem; }
 
 .c-tag:hover {
   background-color: hsl(213, 92%, 95%);
+}
+
+.c-data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.c-data-table tr + tr {
+  border-top: 1px solid hsla(0, 0%, 0%, 0.2);
+}
+
+.c-data-table th, .c-data-table td {
+  padding: .5rem;
+  text-align: left;
+  vertical-align: top;
 }

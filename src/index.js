@@ -17,44 +17,53 @@ function render() {
 
     $root.innerHTML = `
       <h2 class="c-page__title">${entry.title}</h2>
-      <p>By ${entry.author ? entry.author.map(x => DB.data.author[x].name).join(', ') : ''}</p>
-
-      <div>
+      <div style="margin-bottom:1rem;">
         ${renderTagList(entry.tags)}
       </div>
 
-      <dl>
+      <table class="c-data-table">
+        <tbody>
+        ${entry.author ? `
+          <tr>
+            <th>Creator</th>
+            <td>${entry.author.map(x => DB.data.author[x].name).join(', ')}</td>
+          </tr>
+        ` : ''}
         ${entry.genre ? `
-          <dt>Genre</dt>
-          <dd>${entry.genre.map(x => DB.data.genre[x].genre)}</dd>
+          <tr>
+            <th>Genre</th>
+            <td>${entry.genre.map(x => DB.data.genre[x].genre).join(', ')}</td>
+          </tr>
         ` : ''}
         ${entry.publisher ? `
-          <dt>Publisher</dt>
-          <dd>${entry.publisher.map(x => DB.data.publisher[x].publisher)}</dd>
+          <tr>
+            <th>Publisher</th>
+            <td>${entry.publisher.map(x => DB.data.publisher[x].publisher).join(', ')}</td>
+          </tr>
         ` : ''}
         ${entry.notes ? `
-          <dt>Notes</dt>
-          <dd>${entry.notes}</dd>
+          <tr>
+            <th>Notes</th>
+            <td>${entry.notes}</td>
+          </tr>
         ` : ''}
-      </dl>
-
-      ${entry.relatedTexts ? `
-        <div>
-          <h3>Related texts</h3>
-          <div class="c-tile__grid-container">
-            ${entry.relatedTexts.map(x => {
-              const related = DB.data.novel[x];
-              return `
-                <div class="c-tile">
-                  <a class="c-tile__cover-link" href="#/novel/${related.id}">
+        ${entry.notes ? `
+          <tr>
+            <th>Related texts</th>
+            <td>
+              ${entry.relatedTexts.map((x, i) => {
+                const related = DB.data.novel[x];
+                return (i !== 0 ? '<br>' : '') + `
+                  <a href="#/novel/${related.id}">
                     ${related.title}
                   </a>
-                </div>
-              `;
-            }).join('')}
-          </div>
+                `;
+              }).join('')}
+            </td>
+          </tr>
         ` : ''}
-      </div>
+        </tbody>
+      </table>
     `;
   } else if (window.location.hash.substr(0, 6) === '#/tag/') {
     const tagId = window.location.hash.substr(6)
