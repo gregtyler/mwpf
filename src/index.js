@@ -34,6 +34,11 @@ function render() {
     const id = path.substr(6);
     const entry = DB.data.novel[id];
 
+    entry.creators = [];
+    if (entry.author) entry.creators = entry.creators.concat(entry.author)
+    if (entry.filmDirector) entry.creators = entry.creators.concat(entry.filmDirector)
+    if (entry.illustrator) entry.creators = entry.creators.concat(entry.illustrator)
+
     $root.innerHTML = `
       <h2 class="c-page__title">${entry.title}</h2>
       <div style="margin-bottom:1rem;">
@@ -42,11 +47,11 @@ function render() {
 
       <table class="c-data-table">
         <tbody>
-        ${entry.author ? `
+        ${entry.creators ? `
           <tr>
             <th>Creator</th>
-            <td>${entry.author.map(x => `
-              <a href="#/author/${x}">${DB.data.author[x].name}</a>
+            <td>${entry.creators.map(x => `
+              <a href="#/creator/${x}">${DB.data.author[x].name}</a>
             `).join(', ')}</td>
           </tr>
         ` : ''}
@@ -118,31 +123,39 @@ function render() {
       .forEach(entry => {
         $root.innerHTML += renderTextListItem(entry);
       })
-  } else if (path.substr(0, 7) === 'author/') {
-    const authorId = path.substr(7)
+  } else if (path.substr(0, 8) === 'creator/') {
+    const creatorId = path.substr(8)
 
-    $root.innerHTML += `<h2 class="c-page__title">Texts by <strong>${DB.data.author[authorId].name}</strong></h2>`;
+    $root.innerHTML += `<h2 class="c-page__title">Texts by <strong>${DB.data.author[creatorId].name}</strong></h2>`;
 
     Object.values(DB.data.novel)
-      .filter(novel => novel.author && novel.author.indexOf(authorId) > -1)
+      .filter(novel => (
+        (novel.author && novel.author.indexOf(creatorId) > -1) ||
+        (novel.filmDirector && novel.filmDirector.indexOf(creatorId) > -1) ||
+        (novel.illustrator && novel.illustrator.indexOf(creatorId) > -1)
+      ))
       .forEach(entry => {
         $root.innerHTML += renderTextListItem(entry);
       })
-  } else if (path.substr(0, 6) === 'author') {
-    const sortedAuthors = Object.values(DB.data.author)
+  } else if (path.substr(0, 7) === 'creator') {
+    const sortedCreators = Object.values(DB.data.author)
       .sort((a, b) => a.name.trim().split(' ').pop().localeCompare(b.name.trim().split(' ').pop()))
-      .map(author => ({
-        ...author,
-        works: Object.values(DB.data.novel).filter(x => x.author && x.author.indexOf(author.id) > -1),
+      .map(creator => ({
+        ...creator,
+        works: Object.values(DB.data.novel).filter(x => (
+          (x.author && x.author.indexOf(creator.id) > -1) ||
+          (x.filmDirector && x.filmDirector.indexOf(creator.id) > -1) ||
+          (x.illustrator && x.illustrator.indexOf(creator.id) > -1)
+        )),
       }));
 
     $root.innerHTML = `
-      <h2 class="c-page__title">All authors</h2>
+      <h2 class="c-page__title">All creators</h2>
       <ol>
-        ${sortedAuthors.map(author => `
+        ${sortedCreators.map(creator => `
           <li>
-            <a href="/#/author/${author.id}">${author.name}</a>
-            (${author.works.length} works)
+            <a href="/#/creator/${creator.id}">${creator.name}</a>
+            (${creator.works.length} works)
           </li>
         `).join('')}
       </ol>
