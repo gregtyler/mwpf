@@ -1,5 +1,6 @@
 /** globals DB */
 const $root = document.querySelector('#root');
+const $subnav = document.querySelector('#subnav');
 
 function renderTagList(tags) {
   if (!tags) return '';
@@ -91,6 +92,16 @@ function render() {
       .forEach(entry => {
         $root.innerHTML += renderTextListItem(entry);
       })
+  } else if (path.substr(0, 6) === 'genre/') {
+    const genreId = path.substr(6)
+
+    $root.innerHTML += `<h2 class="c-page__title"><strong>${DB.data.genre[genreId].genre}</strong> texts</h2>`;
+
+    Object.values(DB.data.novel)
+      .filter(novel => novel.genre && novel.genre.indexOf(genreId) > -1)
+      .forEach(entry => {
+        $root.innerHTML += renderTextListItem(entry);
+      })
   } else {
     Object.values(DB.data.novel).forEach(entry => {
       $root.innerHTML += renderTextListItem(entry);
@@ -98,9 +109,25 @@ function render() {
   }
 }
 
+function renderSubnav() {
+  const sortedGenres = Object.values(DB.data.genre)
+    .sort((a, b) => a.genre.localeCompare(b.genre))
+    .map(obj => ({...obj, genre: obj.genre.substr(0, 1).toUpperCase() + obj.genre.substr(1)}))
+
+  $subnav.innerHTML = `
+    <h3 class="c-subnav__heading">Genres</h3>
+    <ul>
+      ${sortedGenres.map(genre => `
+        <li><a href="/#/genre/${genre.id}">${genre.genre}</a></li>
+      `).join('')}
+    </ul>
+  `
+}
+
 DB.update()
     .then(() => {
       render();
+      renderSubnav();
       window.addEventListener('hashchange', render);
     });
 
