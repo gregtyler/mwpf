@@ -2,6 +2,8 @@
 const $root = document.querySelector('#root');
 const $subnav = document.querySelector('#subnav');
 
+const ucFirst = s => s.substr(0, 1).toUpperCase() + s.substr(1)
+
 function renderTagList(tags) {
   if (!tags) return '';
 
@@ -95,7 +97,7 @@ function render() {
   } else if (path.substr(0, 6) === 'genre/') {
     const genreId = path.substr(6)
 
-    $root.innerHTML += `<h2 class="c-page__title"><strong>${DB.data.genre[genreId].genre}</strong> texts</h2>`;
+    $root.innerHTML += `<h2 class="c-page__title"><strong>${ucFirst(DB.data.genre[genreId].genre)}</strong> texts</h2>`;
 
     Object.values(DB.data.novel)
       .filter(novel => novel.genre && novel.genre.indexOf(genreId) > -1)
@@ -122,7 +124,7 @@ function render() {
 function renderSubnav() {
   const sortedGenres = Object.values(DB.data.genre)
     .sort((a, b) => a.genre.localeCompare(b.genre))
-    .map(obj => ({...obj, genre: obj.genre.substr(0, 1).toUpperCase() + obj.genre.substr(1)}))
+    .map(obj => ({...obj, genre: ucFirst(obj.genre)}))
 
   const sortedYears = Object.values(DB.data.novel)
     .map(x => x.year)
@@ -130,7 +132,6 @@ function renderSubnav() {
     .sort();
 
   $subnav.innerHTML = `
-    <h2 class="u-visually-hidden">Find texts by&hellip;</h2>
     <h3>Genre</h3>
     <ul>
       ${sortedGenres.map(genre => `
@@ -154,7 +155,15 @@ DB.update()
       window.addEventListener('hashchange', render);
     });
 
-document.querySelector('[data-js="force-refresh"]').addEventListener('click', (e) => {
+document.querySelector('[data-js="force-refresh"]').addEventListener('click', e => {
   e.preventDefault();
   DB.update({force: true}).then(render);
 });
+
+
+const $tray = document.querySelector('.c-subnav')
+Array.from(document.querySelectorAll('.c-subnav-toggle')).forEach($el => {
+  $el.addEventListener('click', () => {
+    $tray.classList.toggle('c-subnav--show');
+  })
+})
