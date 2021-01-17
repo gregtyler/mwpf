@@ -130,14 +130,15 @@ function renderSubnav() {
     .sort();
 
   $subnav.innerHTML = `
-    <h3>Genres</h3>
+    <h2 class="u-visually-hidden">Find texts by&hellip;</h2>
+    <h3>Genre</h3>
     <ul>
       ${sortedGenres.map(genre => `
         <li><a href="/#/genre/${genre.id}">${genre.genre}</a></li>
       `).join('')}
     </ul>
 
-    <h3>Publication years</h3>
+    <h3>Publication year</h3>
     <ol class="c-subnav__grid-list">
     ${sortedYears.map(year => `
       <li><a href="/#/year/${year}">${year}</a></li>
