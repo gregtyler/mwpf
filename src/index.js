@@ -66,7 +66,7 @@ function render() {
             <td>${entry.notes}</td>
           </tr>
         ` : ''}
-        ${entry.notes ? `
+        ${entry.relatedTexts ? `
           <tr>
             <th>Related texts</th>
             <td>
