@@ -1,5 +1,4 @@
-import DB from './db.js'
-
+/** globals DB */
 const $root = document.querySelector('#root');
 
 function renderTagList(tags) {

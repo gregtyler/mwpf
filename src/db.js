@@ -1,5 +1,4 @@
 /* globals contenful */
-
 const DB = {
   data: null,
 
@@ -76,5 +75,3 @@ const DB = {
 }
 
 DB.load()
-
-export default DB
