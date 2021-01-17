@@ -45,7 +45,9 @@ function render() {
         ${entry.author ? `
           <tr>
             <th>Creator</th>
-            <td>${entry.author.map(x => DB.data.author[x].name).join(', ')}</td>
+            <td>${entry.author.map(x => `
+              <a href="#/author/${x}">${DB.data.author[x].name}</a>
+            `).join(', ')}</td>
           </tr>
         ` : ''}
         ${entry.genre ? `
@@ -114,6 +116,35 @@ function render() {
       .forEach(entry => {
         $root.innerHTML += renderTextListItem(entry);
       })
+  } else if (path.substr(0, 7) === 'author/') {
+    const authorId = path.substr(7)
+
+    $root.innerHTML += `<h2 class="c-page__title">Texts by <strong>${DB.data.author[authorId].name}</strong></h2>`;
+
+    Object.values(DB.data.novel)
+      .filter(novel => novel.author && novel.author.indexOf(authorId) > -1)
+      .forEach(entry => {
+        $root.innerHTML += renderTextListItem(entry);
+      })
+  } else if (path.substr(0, 6) === 'author') {
+    const sortedAuthors = Object.values(DB.data.author)
+      .sort((a, b) => a.name.trim().split(' ').pop().localeCompare(b.name.trim().split(' ').pop()))
+      .map(author => ({
+        ...author,
+        works: Object.values(DB.data.novel).filter(x => x.author && x.author.indexOf(author.id) > -1),
+      }));
+
+    $root.innerHTML = `
+      <h2 class="c-page__title">All authors</h2>
+      <ol>
+        ${sortedAuthors.map(author => `
+          <li>
+            <a href="/#/author/${author.id}">${author.name}</a>
+            (${author.works.length} works)
+          </li>
+        `).join('')}
+      </ol>
+    `;
   } else {
     Object.values(DB.data.novel).forEach(entry => {
       $root.innerHTML += renderTextListItem(entry);
