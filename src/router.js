@@ -8,14 +8,15 @@ function Router() {
   }
 
   function parse (path) {
-    map.some(({ match, callback }) => {
+    for (let i = 0; i < map.length; i++) {
+      const { match, callback } = map[i];
+
       const m = path.match(match);
 
       if (m) {
-        callback.apply(window, m.slice(1))
-        return true;
+        return callback.apply(window, m.slice(1))
       }
-    })
+    }
   }
 
   return { add, parse }

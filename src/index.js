@@ -9,17 +9,21 @@ function renderTagList(tags) {
 }
 
 function renderTextList(title = '', filter = () => { return true }) {
-  if (title) $root.innerHTML += `<h2 class="c-page__title">${title}</h2>`;
+  let html = '';
+
+  if (title) html += `<h2 class="c-page__title">${title}</h2>`;
 
   const entries = Object.values(DB.data.novel).filter(filter);
 
   if (entries.length) {
     entries.forEach(entry => {
-      $root.innerHTML += renderTextListItem(entry);
+      html += renderTextListItem(entry);
     })
   } else {
-    $root.innerHTML += '<p>No results found.</p>';
+    html += '<p>No results found.</p>';
   }
+
+  return html;
 }
 
 function renderTextListItem(entry) {
@@ -37,43 +41,31 @@ function renderTextListItem(entry) {
 }
 
 const router = (new Router())
-  .add(/(about|contribute)/, (page) => {
-    $root.innerHTML = document.querySelector('#page-' + page).innerHTML;
-  })
-  .add(/tag\/(.+)/, (tagId) => {
-    renderTextList(
-      `Texts tagged <strong>#${DB.data.tag[tagId].tag}</strong>`,
-      novel => novel.tags && novel.tags.indexOf(tagId) > -1
-    );
-  })
-  .add(/genre\/(.+)/, (genreId) => {
-    renderTextList(
-      `<strong>${DB.data.genre[genreId].genre}</strong> texts`,
-      novel => novel.genre && novel.genre.indexOf(genreId) > -1
-    );
-  })
-  .add(/year\/(.+)/, (year) => {
-    renderTextList(
-      `Texts from <strong>${year}</strong>`,
-      novel => novel.year === parseInt(year)
-    );
-  })
-  .add(/creator\/(.+)/, (creatorId) => {
-    renderTextList(
-      `Texts by <strong>${DB.data.author[creatorId].name}</strong>`,
-      novel => (
-        (novel.author && novel.author.indexOf(creatorId) > -1) ||
-        (novel.filmDirector && novel.filmDirector.indexOf(creatorId) > -1) ||
-        (novel.illustrator && novel.illustrator.indexOf(creatorId) > -1)
-      )
-    );
-  })
-  .add(/publisher\/(.+)/, (publisherId) => {
-    renderTextList(
-      `Texts published by <strong>${DB.data.publisher[publisherId].publisher}</strong>`,
-      novel => novel.publisher && novel.publisher.indexOf(publisherId) > -1
-    );
-  })
+  .add(/(about|contribute)/, (page) => document.querySelector('#page-' + page).innerHTML)
+  .add(/tag\/(.+)/, (tagId) => renderTextList(
+    `Texts tagged <strong>#${DB.data.tag[tagId].tag}</strong>`,
+    novel => novel.tags && novel.tags.indexOf(tagId) > -1
+  ))
+  .add(/genre\/(.+)/, (genreId) => renderTextList(
+    `<strong>${DB.data.genre[genreId].genre}</strong> texts`,
+    novel => novel.genre && novel.genre.indexOf(genreId) > -1
+  ))
+  .add(/year\/(.+)/, (year) => renderTextList(
+    `Texts from <strong>${year}</strong>`,
+    novel => novel.year === parseInt(year)
+  ))
+  .add(/creator\/(.+)/, (creatorId) => renderTextList(
+    `Texts by <strong>${DB.data.author[creatorId].name}</strong>`,
+    novel => (
+      (novel.author && novel.author.indexOf(creatorId) > -1) ||
+      (novel.filmDirector && novel.filmDirector.indexOf(creatorId) > -1) ||
+      (novel.illustrator && novel.illustrator.indexOf(creatorId) > -1)
+    )
+  ))
+  .add(/publisher\/(.+)/, (publisherId) => renderTextList(
+    `Texts published by <strong>${DB.data.publisher[publisherId].publisher}</strong>`,
+    novel => novel.publisher && novel.publisher.indexOf(publisherId) > -1
+  ))
   .add(/novel\/(.+)/, (id) => {
     const entry = DB.data.novel[id];
 
@@ -82,7 +74,7 @@ const router = (new Router())
     if (entry.filmDirector) entry.creators = entry.creators.concat(entry.filmDirector)
     if (entry.illustrator) entry.creators = entry.creators.concat(entry.illustrator)
 
-    $root.innerHTML = `
+    return `
       <h2 class="c-page__title">${entry.title}</h2>
       <div style="margin-bottom:1rem;">
         ${renderTagList(entry.tags)}
@@ -108,7 +100,7 @@ const router = (new Router())
           <tr>
             <th>Publisher</th>
             <td>${entry.publisher.map(x => `
-            <a href="#/publisher/${x}">${DB.data.publisher[x].publisher}</a>
+              <a href="#/publisher/${x}">${DB.data.publisher[x].publisher}</a>
             `).join(', ')}</td>
           </tr>
         ` : ''}
@@ -149,7 +141,7 @@ const router = (new Router())
         )),
       }));
 
-    $root.innerHTML = `
+    return `
       <h2 class="c-page__title">All creators</h2>
       <ol>
         ${sortedCreators.map(creator => `
@@ -169,7 +161,7 @@ const router = (new Router())
         works: Object.values(DB.data.novel).filter(x => x.publisher && x.publisher.indexOf(publisher.id) > -1),
       }));
 
-    $root.innerHTML = `
+    return `
       <h2 class="c-page__title">All publishers</h2>
       <ol>
         ${sortedPublishers.map(publisher => `
@@ -181,15 +173,12 @@ const router = (new Router())
       </ol>
     `;
   })
-  .add(/.*/, () => {
-    renderTextList()
-  })
+  .add(/.*/, renderTextList)
 
 function render() {
-  $root.innerHTML = '';
   const path = window.location.hash.substr(2);
 
-  router.parse(path);
+  $root.innerHTML = router.parse(path);
 }
 
 function renderSubnav() {
