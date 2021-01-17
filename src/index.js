@@ -8,10 +8,26 @@ function renderTagList(tags) {
   return tags.map(x => `<a href="#/tag/${x}" class="c-tag">${DB.data.tag[x].tag}</a>`).join(' ');
 }
 
+function renderTextListItem(entry) {
+  return `
+    <div class="c-tile">
+      <a class="c-tile__cover-link" href="#/novel/${entry.id}">
+        <strong>${entry.title}</strong>
+      </a>
+      <br>
+      by ${entry.author ? entry.author.map(x => DB.data.author[x].name).join(', ') : ''}
+      <br>
+      ${renderTagList(entry.tags)}
+    </div>
+  `
+}
+
 function render() {
   $root.innerHTML = '';
 
-  if (window.location.hash.substr(0, 8) === '#/novel/') {
+  if (window.location.hash.substr(0, 7) === '#/about') {
+    $root.innerHTML = document.querySelector('#about-page').innerHTML;
+  } else if (window.location.hash.substr(0, 8) === '#/novel/') {
     const id = window.location.hash.substr(8);
     const entry = DB.data.novel[id];
 
@@ -70,36 +86,14 @@ function render() {
 
     $root.innerHTML += `<h2 class="c-page__title">Texts tagged <strong>#${DB.data.tag[tagId].tag}</strong></h2>`;
 
-    Object.values(DB.data.novel).filter(novel => novel.tags && novel.tags.indexOf(tagId) > -1).forEach(entry => {
-      const line = `
-        <div class="c-tile">
-          <a class="c-tile__cover-link" href="#/novel/${entry.id}">
-            <strong>${entry.title}</strong>
-          </a>
-          <br>
-          by ${entry.author ? entry.author.map(x => DB.data.author[x].name).join(', ') : ''}
-          <br>
-          ${renderTagList(entry.tags)}
-        </div>
-      `;
-
-      $root.innerHTML += line;
-    })
+    Object.values(DB.data.novel)
+      .filter(novel => novel.tags && novel.tags.indexOf(tagId) > -1)
+      .forEach(entry => {
+        $root.innerHTML += renderTextListItem(entry);
+      })
   } else {
     Object.values(DB.data.novel).forEach(entry => {
-      const line = `
-        <div class="c-tile">
-          <a class="c-tile__cover-link" href="#/novel/${entry.id}">
-            <strong>${entry.title}</strong>
-          </a>
-          <br>
-          by ${entry.author ? entry.author.map(x => DB.data.author[x].name).join(', ') : ''}
-          <br>
-          ${renderTagList(entry.tags)}
-        </div>
-      `;
-
-      $root.innerHTML += line;
+      $root.innerHTML += renderTextListItem(entry);
     })
   }
 }
