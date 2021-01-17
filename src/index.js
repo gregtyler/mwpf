@@ -102,6 +102,16 @@ function render() {
       .forEach(entry => {
         $root.innerHTML += renderTextListItem(entry);
       })
+  } else if (path.substr(0, 5) === 'year/') {
+    const year = parseInt(path.substr(5))
+
+    $root.innerHTML += `<h2 class="c-page__title">Texts from <strong>${year}</strong></h2>`;
+
+    Object.values(DB.data.novel)
+      .filter(novel => novel.year === year)
+      .forEach(entry => {
+        $root.innerHTML += renderTextListItem(entry);
+      })
   } else {
     Object.values(DB.data.novel).forEach(entry => {
       $root.innerHTML += renderTextListItem(entry);
@@ -114,13 +124,25 @@ function renderSubnav() {
     .sort((a, b) => a.genre.localeCompare(b.genre))
     .map(obj => ({...obj, genre: obj.genre.substr(0, 1).toUpperCase() + obj.genre.substr(1)}))
 
+  const sortedYears = Object.values(DB.data.novel)
+    .map(x => x.year)
+    .filter((x, i, arr) => arr.indexOf(x) === i)
+    .sort();
+
   $subnav.innerHTML = `
-    <h3 class="c-subnav__heading">Genres</h3>
+    <h3>Genres</h3>
     <ul>
       ${sortedGenres.map(genre => `
         <li><a href="/#/genre/${genre.id}">${genre.genre}</a></li>
       `).join('')}
     </ul>
+
+    <h3>Publication years</h3>
+    <ol class="c-subnav__grid-list">
+    ${sortedYears.map(year => `
+      <li><a href="/#/year/${year}">${year}</a></li>
+    `).join('')}
+    </ol>
   `
 }
 

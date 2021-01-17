@@ -35,6 +35,15 @@ a:hover {
   text-decoration: none;
 }
 
+.c-subnav__grid-list {
+  display: grid;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: repeat(auto-fill, minmax(4ch, 1fr));
+  grid-gap: .5rem;
+}
+
 .c-page {
   padding: 1rem;
 }
