@@ -14,8 +14,8 @@ function renderTextListItem(entry) {
       <a class="c-tile__cover-link" href="#/novel/${entry.id}">
         <strong>${entry.title}</strong>
       </a>
-      <br>
-      by ${entry.author ? entry.author.map(x => DB.data.author[x].name).join(', ') : ''}
+      ${entry.author ? `<br>
+      by ${entry.author.map(x => DB.data.author[x].name).join(', ')}` : ''}
       <br>
       ${renderTagList(entry.tags)}
     </div>
