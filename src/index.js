@@ -5,7 +5,7 @@ const $subnav = document.querySelector('#subnav');
 function renderTagList(tags) {
   if (!tags) return '';
 
-  return tags.map(x => `<a href="#/tag/${x}" class="c-tag">${DB.data.tag[x].tag}</a>`).join(' ');
+  return tags.map(x => DB.data.tag[x] ? `<a href="#/tag/${x}" class="c-tag">${DB.data.tag[x].tag}</a>` : '').join(' ');
 }
 
 function renderTextListItem(entry) {
