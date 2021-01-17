@@ -2,8 +2,6 @@
 const $root = document.querySelector('#root');
 const $subnav = document.querySelector('#subnav');
 
-const ucFirst = s => s.substr(0, 1).toUpperCase() + s.substr(1)
-
 function renderTagList(tags) {
   if (!tags) return '';
 
@@ -46,7 +44,7 @@ const router = (new Router())
   })
   .add(/genre\/(.+)/, (genreId) => {
     renderTextList(
-      `<strong>${ucFirst(DB.data.genre[genreId].genre)}</strong> texts`,
+      `<strong>${DB.data.genre[genreId].genre}</strong> texts`,
       novel => novel.genre && novel.genre.indexOf(genreId) > -1
     );
   })
@@ -193,7 +191,6 @@ function render() {
 function renderSubnav() {
   const sortedGenres = Object.values(DB.data.genre)
     .sort((a, b) => a.genre.localeCompare(b.genre))
-    .map(obj => ({...obj, genre: ucFirst(obj.genre)}))
 
   const sortedYears = Object.values(DB.data.novel)
     .map(x => x.year)
