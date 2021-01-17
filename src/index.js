@@ -59,7 +59,9 @@ function render() {
         ${entry.publisher ? `
           <tr>
             <th>Publisher</th>
-            <td>${entry.publisher.map(x => DB.data.publisher[x].publisher).join(', ')}</td>
+            <td>${entry.publisher.map(x => `
+            <a href="#/publisher/${x}">${DB.data.publisher[x].publisher}</a>
+            `).join(', ')}</td>
           </tr>
         ` : ''}
         ${entry.notes ? `
@@ -141,6 +143,37 @@ function render() {
           <li>
             <a href="/#/author/${author.id}">${author.name}</a>
             (${author.works.length} works)
+          </li>
+        `).join('')}
+      </ol>
+    `;
+  } else if (path.substr(0, 10) === 'publisher/') {
+    const publisherId = path.substr(10)
+
+    console.log(publisherId, DB.data.publisher)
+
+    $root.innerHTML += `<h2 class="c-page__title">Texts published by <strong>${DB.data.publisher[publisherId].publisher}</strong></h2>`;
+
+    Object.values(DB.data.novel)
+      .filter(novel => novel.publisher && novel.publisher.indexOf(publisherId) > -1)
+      .forEach(entry => {
+        $root.innerHTML += renderTextListItem(entry);
+      })
+  } else if (path.substr(0, 9) === 'publisher') {
+    const sortedPublishers = Object.values(DB.data.publisher)
+      .sort((a, b) => a.publisher.trim().localeCompare(b.publisher.trim()))
+      .map(publisher => ({
+        ...publisher,
+        works: Object.values(DB.data.novel).filter(x => x.publisher && x.publisher.indexOf(publisher.id) > -1),
+      }));
+
+    $root.innerHTML = `
+      <h2 class="c-page__title">All publishers</h2>
+      <ol>
+        ${sortedPublishers.map(publisher => `
+          <li>
+            <a href="/#/publisher/${publisher.id}">${publisher.publisher}</a>
+            (${publisher.works.length} works)
           </li>
         `).join('')}
       </ol>
