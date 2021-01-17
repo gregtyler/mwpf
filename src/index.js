@@ -11,11 +11,15 @@ function renderTagList(tags) {
 function renderTextList(title = '', filter = () => { return true }) {
   if (title) $root.innerHTML += `<h2 class="c-page__title">${title}</h2>`;
 
-  Object.values(DB.data.novel)
-    .filter(filter)
-    .forEach(entry => {
+  const entries = Object.values(DB.data.novel).filter(filter);
+
+  if (entries.length) {
+    entries.forEach(entry => {
       $root.innerHTML += renderTextListItem(entry);
     })
+  } else {
+    $root.innerHTML += '<p>No results found.</p>';
+  }
 }
 
 function renderTextListItem(entry) {
@@ -51,7 +55,7 @@ const router = (new Router())
   .add(/year\/(.+)/, (year) => {
     renderTextList(
       `Texts from <strong>${year}</strong>`,
-      novel => novel.year === year
+      novel => novel.year === parseInt(year)
     );
   })
   .add(/creator\/(.+)/, (creatorId) => {
@@ -194,6 +198,7 @@ function renderSubnav() {
 
   const sortedYears = Object.values(DB.data.novel)
     .map(x => x.year)
+    .filter(x => !!x)
     .filter((x, i, arr) => arr.indexOf(x) === i)
     .sort();
 
