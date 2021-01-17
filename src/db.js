@@ -32,8 +32,22 @@ const DB = {
     };
   },
 
-  async update() {
-    if (this.data !== null) return
+  shouldRefresh() {
+    if (this.data === null) return true;
+
+    const lastUpdated = window.localStorage.getItem('db-updated');
+    const ONE_HOUR = 1000 * 60 * 60;
+    if (new Date() - new Date(lastUpdated) > ONE_HOUR) {
+      return true;
+    }
+
+    return false;
+  },
+
+  async update(options  = {}) {
+    options = Object.assign({ force: false }, options);
+
+    if (!options.force && !this.shouldRefresh()) return;
 
     const client = contentful.createClient({
       space: "377d8odqein8",
@@ -53,6 +67,7 @@ const DB = {
     });
 
     window.localStorage.setItem('db', this.serialize())
+    window.localStorage.setItem('db-updated', (new Date()).toISOString())
   },
 
   serialize() {

@@ -103,3 +103,8 @@ DB.update()
       render();
       window.addEventListener('hashchange', render);
     });
+
+document.querySelector('[data-js="force-refresh"]').addEventListener('click', (e) => {
+  e.preventDefault();
+  DB.update({force: true}).then(render);
+});
