@@ -1,4 +1,4 @@
-/** globals DB */
+/** globals DB, Router */
 const $root = document.querySelector('#root');
 const $subnav = document.querySelector('#subnav');
 
@@ -8,6 +8,16 @@ function renderTagList(tags) {
   if (!tags) return '';
 
   return tags.map(x => DB.data.tag[x] ? `<a href="#/tag/${x}" class="c-tag">${DB.data.tag[x].tag}</a>` : '').join(' ');
+}
+
+function renderTextList(title = '', filter = () => { return true }) {
+  if (title) $root.innerHTML += `<h2 class="c-page__title">${title}</h2>`;
+
+  Object.values(DB.data.novel)
+    .filter(filter)
+    .forEach(entry => {
+      $root.innerHTML += renderTextListItem(entry);
+    })
 }
 
 function renderTextListItem(entry) {
@@ -24,14 +34,45 @@ function renderTextListItem(entry) {
   `
 }
 
-function render() {
-  $root.innerHTML = '';
-  const path = window.location.hash.substr(2);
-
-  if (path === 'about' || path === 'contribute') {
-    $root.innerHTML = document.querySelector('#page-' + path).innerHTML;
-  } else if (path.substr(0, 6) === 'novel/') {
-    const id = path.substr(6);
+const router = (new Router())
+  .add(/(about|contribute)/, (page) => {
+    $root.innerHTML = document.querySelector('#page-' + page).innerHTML;
+  })
+  .add(/tag\/(.+)/, (tagId) => {
+    renderTextList(
+      `Texts tagged <strong>#${DB.data.tag[tagId].tag}</strong>`,
+      novel => novel.tags && novel.tags.indexOf(tagId) > -1
+    );
+  })
+  .add(/genre\/(.+)/, (genreId) => {
+    renderTextList(
+      `<strong>${ucFirst(DB.data.genre[genreId].genre)}</strong> texts`,
+      novel => novel.genre && novel.genre.indexOf(genreId) > -1
+    );
+  })
+  .add(/year\/(.+)/, (year) => {
+    renderTextList(
+      `Texts from <strong>${year}</strong>`,
+      novel => novel.year === year
+    );
+  })
+  .add(/creator\/(.+)/, (creatorId) => {
+    renderTextList(
+      `Texts by <strong>${DB.data.author[creatorId].name}</strong>`,
+      novel => (
+        (novel.author && novel.author.indexOf(creatorId) > -1) ||
+        (novel.filmDirector && novel.filmDirector.indexOf(creatorId) > -1) ||
+        (novel.illustrator && novel.illustrator.indexOf(creatorId) > -1)
+      )
+    );
+  })
+  .add(/publisher\/(.+)/, (publisherId) => {
+    renderTextList(
+      `Texts published by <strong>${DB.data.publisher[publisherId].publisher}</strong>`,
+      novel => novel.publisher && novel.publisher.indexOf(publisherId) > -1
+    );
+  })
+  .add(/novel\/(.+)/, (id) => {
     const entry = DB.data.novel[id];
 
     entry.creators = [];
@@ -93,51 +134,8 @@ function render() {
         </tbody>
       </table>
     `;
-  } else if (path.substr(0, 4) === 'tag/') {
-    const tagId = path.substr(4)
-
-    $root.innerHTML += `<h2 class="c-page__title">Texts tagged <strong>#${DB.data.tag[tagId].tag}</strong></h2>`;
-
-    Object.values(DB.data.novel)
-      .filter(novel => novel.tags && novel.tags.indexOf(tagId) > -1)
-      .forEach(entry => {
-        $root.innerHTML += renderTextListItem(entry);
-      })
-  } else if (path.substr(0, 6) === 'genre/') {
-    const genreId = path.substr(6)
-
-    $root.innerHTML += `<h2 class="c-page__title"><strong>${ucFirst(DB.data.genre[genreId].genre)}</strong> texts</h2>`;
-
-    Object.values(DB.data.novel)
-      .filter(novel => novel.genre && novel.genre.indexOf(genreId) > -1)
-      .forEach(entry => {
-        $root.innerHTML += renderTextListItem(entry);
-      })
-  } else if (path.substr(0, 5) === 'year/') {
-    const year = parseInt(path.substr(5))
-
-    $root.innerHTML += `<h2 class="c-page__title">Texts from <strong>${year}</strong></h2>`;
-
-    Object.values(DB.data.novel)
-      .filter(novel => novel.year === year)
-      .forEach(entry => {
-        $root.innerHTML += renderTextListItem(entry);
-      })
-  } else if (path.substr(0, 8) === 'creator/') {
-    const creatorId = path.substr(8)
-
-    $root.innerHTML += `<h2 class="c-page__title">Texts by <strong>${DB.data.author[creatorId].name}</strong></h2>`;
-
-    Object.values(DB.data.novel)
-      .filter(novel => (
-        (novel.author && novel.author.indexOf(creatorId) > -1) ||
-        (novel.filmDirector && novel.filmDirector.indexOf(creatorId) > -1) ||
-        (novel.illustrator && novel.illustrator.indexOf(creatorId) > -1)
-      ))
-      .forEach(entry => {
-        $root.innerHTML += renderTextListItem(entry);
-      })
-  } else if (path.substr(0, 7) === 'creator') {
+  })
+  .add(/creator/, () => {
     const sortedCreators = Object.values(DB.data.author)
       .sort((a, b) => a.name.trim().split(' ').pop().localeCompare(b.name.trim().split(' ').pop()))
       .map(creator => ({
@@ -160,19 +158,8 @@ function render() {
         `).join('')}
       </ol>
     `;
-  } else if (path.substr(0, 10) === 'publisher/') {
-    const publisherId = path.substr(10)
-
-    console.log(publisherId, DB.data.publisher)
-
-    $root.innerHTML += `<h2 class="c-page__title">Texts published by <strong>${DB.data.publisher[publisherId].publisher}</strong></h2>`;
-
-    Object.values(DB.data.novel)
-      .filter(novel => novel.publisher && novel.publisher.indexOf(publisherId) > -1)
-      .forEach(entry => {
-        $root.innerHTML += renderTextListItem(entry);
-      })
-  } else if (path.substr(0, 9) === 'publisher') {
+  })
+  .add(/publisher/, () => {
     const sortedPublishers = Object.values(DB.data.publisher)
       .sort((a, b) => a.publisher.trim().localeCompare(b.publisher.trim()))
       .map(publisher => ({
@@ -191,11 +178,16 @@ function render() {
         `).join('')}
       </ol>
     `;
-  } else {
-    Object.values(DB.data.novel).forEach(entry => {
-      $root.innerHTML += renderTextListItem(entry);
-    })
-  }
+  })
+  .add(/.*/, () => {
+    renderTextList()
+  })
+
+function render() {
+  $root.innerHTML = '';
+  const path = window.location.hash.substr(2);
+
+  router.parse(path);
 }
 
 function renderSubnav() {
