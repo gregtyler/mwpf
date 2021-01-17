@@ -24,11 +24,12 @@ function renderTextListItem(entry) {
 
 function render() {
   $root.innerHTML = '';
+  const path = window.location.hash.substr(2);
 
-  if (window.location.hash.substr(0, 7) === '#/about') {
-    $root.innerHTML = document.querySelector('#about-page').innerHTML;
-  } else if (window.location.hash.substr(0, 8) === '#/novel/') {
-    const id = window.location.hash.substr(8);
+  if (path === 'about' || path === 'contribute') {
+    $root.innerHTML = document.querySelector('#page-' + path).innerHTML;
+  } else if (path.substr(0, 6) === 'novel/') {
+    const id = path.substr(6);
     const entry = DB.data.novel[id];
 
     $root.innerHTML = `
@@ -81,8 +82,8 @@ function render() {
         </tbody>
       </table>
     `;
-  } else if (window.location.hash.substr(0, 6) === '#/tag/') {
-    const tagId = window.location.hash.substr(6)
+  } else if (path.substr(0, 4) === 'tag/') {
+    const tagId = path.substr(4)
 
     $root.innerHTML += `<h2 class="c-page__title">Texts tagged <strong>#${DB.data.tag[tagId].tag}</strong></h2>`;
 
