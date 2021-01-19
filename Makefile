@@ -1,2 +1,5 @@
 up:
-	npx serve
+	npx serve public
+
+sync:
+	node data/download.js ./public/data.json
