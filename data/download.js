@@ -38,7 +38,7 @@ async function main() {
                     provider: arrayToRefs(fields.distributor, 'Organization'),
                     datePublished: fields.year ? `${fields.year}-01-01` : null,
                     keywords: fields.tags ? fields.tags.map(t => new Thing('DefinedTerm', {identifier: t.sys.id})) : null,
-                    description: fields.notes,
+                    comment: fields.notes ? new Thing('Comment', {text: fields.notes}) : null,
                     citation: arrayToRefs(fields.relatedTexts_2, 'CreativeWork'),
                     url: fields.link,
                     director: arrayToRefs(fields.filmDirector, 'Person'),
