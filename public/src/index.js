@@ -88,72 +88,90 @@ const router = (new Router())
 
 
     return `
-      <h2 class="c-page__title">${entry.name}</h2>
-      <div style="margin-bottom:1rem;">
-        ${renderTagList(entry.keywords)}
-      </div>
+      <div vocab="https://schema.org/" resource="#/novel/${entry.identifier}" typeof="${entry['@type']}">
+        <h2 class="c-page__title" property="name">${entry.name}</h2>
+        <div style="margin-bottom:1rem;">
+          ${renderTagList(entry.keywords)}
+        </div>
 
-      <table class="c-data-table">
-        <tbody>
-        ${creators ? `
-          <tr>
-            <th>Creator</th>
-            <td>${creators.map(x => `
-              <a href="#/creator/${x.identifier}">${DB.data[x.identifier].name}</a>
-            `).join(', ')}</td>
-          </tr>
-        ` : ''}
-        ${entry.genre ? `
-          <tr>
-            <th>Genre</th>
-            <td>${entry.genre.join(', ')}</td>
-          </tr>
-        ` : ''}
-        ${entry.publisher ? `
-          <tr>
-            <th>Publisher</th>
-            <td>${entry.publisher.map(x => `
-              <a href="#/publisher/${x.identifier}">${DB.data[x.identifier].name}</a>
-            `).join(', ')}</td>
-          </tr>
-        ` : ''}
-        ${entry.comment ? `
-          <tr>
-            <th>Notes</th>
-            <td>${entry.comment.text}</td>
-          </tr>
-        ` : ''}
-        ${entry.citation ? `
-          <tr>
-            <th>Related texts</th>
-            <td>
-              ${entry.citation.map((x, i) => {
-                const related = DB.data[x.identifier];
-                return (i !== 0 ? '<br>' : '') + `
-                  <a href="#/novel/${related.identifier}">
-                    ${related.name}
-                  </a>
-                `;
-              }).join('')}
-            </td>
-          </tr>
-        ` : ''}
-        ${entry.url ? `
-          <tr>
-            <th>Link</th>
-            <td>
-              <a href="${entry.url}">
-                ${entry.url}
-              </a>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" class="o-svg-icon" title="External link">
-                <path d="M18 17.759v3.366C18 22.159 17.159 23 16.125 23H4.875C3.841 23 3 22.159 3 21.125V9.875C3 8.841 3.841 8 4.875 8h3.429l3.001-3h-6.43C2.182 5 0 7.182 0 9.875v11.25C0 23.818 2.182 26 4.875 26h11.25C18.818 26 21 23.818 21 21.125v-6.367l-3 3.001z" />
-                <path d="M22.581 0H12.322c-1.886.002-1.755.51-.76 1.504l3.22 3.22-5.52 5.519c-1.145 1.144-1.144 2.998 0 4.141l2.41 2.411c1.144 1.141 2.996 1.142 4.14-.001l5.52-5.52 3.16 3.16c1.101 1.1 1.507 1.129 1.507-.757L26 3.419c-.001-3.437.024-3.42-3.419-3.419z" />
-              </svg>
-            </td>
-          </tr>
-        ` : ''}
-        </tbody>
-      </table>
+        <table class="c-data-table">
+          <tbody>
+          ${entry.author ? `
+            <tr>
+              <th>Creator</th>
+              <td>${entry.author.map(x => `
+                <a href="#/creator/${x.identifier}" property="author">${DB.data[x.identifier].name}</a>
+              `).join(', ')}</td>
+            </tr>
+          ` : ''}
+          ${entry.director ? `
+            <tr>
+              <th>Director</th>
+              <td>${entry.director.map(x => `
+                <a href="#/creator/${x.identifier}" property="director">${DB.data[x.identifier].name}</a>
+              `).join(', ')}</td>
+            </tr>
+          ` : ''}
+          ${entry.illustrator ? `
+            <tr>
+              <th>Illustrator</th>
+              <td>${entry.illustrator.map(x => `
+                <a href="#/creator/${x.identifier}" property="illustrator">${DB.data[x.identifier].name}</a>
+              `).join(', ')}</td>
+            </tr>
+          ` : ''}
+          ${entry.genre ? `
+            <tr>
+              <th>Genre</th>
+              <td property="genre">${entry.genre.join(', ')}</td>
+            </tr>
+          ` : ''}
+          ${entry.publisher ? `
+            <tr>
+              <th>Publisher</th>
+              <td>${entry.publisher.map(x => `
+                <a href="#/publisher/${x.identifier}" property="publisher">${DB.data[x.identifier].name}</a>
+              `).join(', ')}</td>
+            </tr>
+          ` : ''}
+          ${entry.comment ? `
+            <tr>
+              <th>Notes</th>
+              <td property="comment">${entry.comment.text}</td>
+            </tr>
+          ` : ''}
+          ${entry.citation ? `
+            <tr>
+              <th>Related texts</th>
+              <td>
+                ${entry.citation.map((x, i) => {
+                  const related = DB.data[x.identifier];
+                  return (i !== 0 ? '<br>' : '') + `
+                    <a href="#/novel/${related.identifier}" property="citation">
+                      ${related.name}
+                    </a>
+                  `;
+                }).join('')}
+              </td>
+            </tr>
+          ` : ''}
+          ${entry.url ? `
+            <tr>
+              <th>Link</th>
+              <td>
+                <a href="${entry.url}" property="url">
+                  ${entry.url}
+                </a>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" class="o-svg-icon" title="External link">
+                  <path d="M18 17.759v3.366C18 22.159 17.159 23 16.125 23H4.875C3.841 23 3 22.159 3 21.125V9.875C3 8.841 3.841 8 4.875 8h3.429l3.001-3h-6.43C2.182 5 0 7.182 0 9.875v11.25C0 23.818 2.182 26 4.875 26h11.25C18.818 26 21 23.818 21 21.125v-6.367l-3 3.001z" />
+                  <path d="M22.581 0H12.322c-1.886.002-1.755.51-.76 1.504l3.22 3.22-5.52 5.519c-1.145 1.144-1.144 2.998 0 4.141l2.41 2.411c1.144 1.141 2.996 1.142 4.14-.001l5.52-5.52 3.16 3.16c1.101 1.1 1.507 1.129 1.507-.757L26 3.419c-.001-3.437.024-3.42-3.419-3.419z" />
+                </svg>
+              </td>
+            </tr>
+          ` : ''}
+          </tbody>
+        </table>
+      </div>
     `;
   })
   .add(/creator/, () => {
