@@ -81,6 +81,23 @@ a:hover {
   text-decoration: none;
 }
 
+.c-header__skip-links {
+  position: absolute;
+  left: -9999em;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.c-header__skip-links a:focus {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  padding: 1rem;
+  background-color: white;
+}
+
 .c-subnav__header {
   display: flex;
   justify-content: space-between;

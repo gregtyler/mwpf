@@ -23,7 +23,7 @@ function renderTagList(tags) {
 function renderTextList(title = '', filter = () => { return true }) {
   let html = '';
 
-  if (title) html += `<h2 class="c-page__title">${title}</h2>`;
+  if (title) html += `<h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">${title}</h2>`;
 
   const entries = Object.values(DB.data)
     .filter(isCreativeWork)
@@ -89,7 +89,9 @@ const router = (new Router())
 
     return `
       <div vocab="https://schema.org/" resource="#/novel/${entry.identifier}" typeof="${entry['@type']}">
-        <h2 class="c-page__title" property="name">${entry.name}</h2>
+        <h2 class="c-page__title" property="name" id="skip-to-content-link-target" tabindex="-1">
+          ${entry.name}
+        </h2>
         <div style="margin-bottom:1rem;">
           ${renderTagList(entry.keywords)}
         </div>
@@ -188,7 +190,9 @@ const router = (new Router())
       .filter(creator => creator.works.length > 0);
 
     return `
-      <h2 class="c-page__title">All creators</h2>
+      <h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">
+        All creators
+      </h2>
       <ol>
         ${sortedCreators.map(creator => `
           <li>
@@ -210,7 +214,9 @@ const router = (new Router())
       .filter(x => x.works.length > 0);
 
     return `
-      <h2 class="c-page__title">All publishers</h2>
+      <h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">
+        All publishers
+      </h2>
       <ol>
         ${sortedPublishers.map(publisher => `
           <li>
@@ -221,7 +227,7 @@ const router = (new Router())
       </ol>
     `;
   })
-  .add(/.*/, renderTextList)
+  .add(/.*/, () => renderTextList('All entries'))
 
 function render() {
   const path = window.location.hash.substr(2);
