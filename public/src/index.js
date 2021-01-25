@@ -2,10 +2,22 @@
 const $root = document.querySelector('#root');
 const $subnav = document.querySelector('#subnav');
 
+function isCreativeWork(entry) {
+  return entry['@type'] === 'CreativeWork' || entry['@type'] === 'Movie' || entry['@type'] === 'Book';
+}
+
+function isWorkByCreator(work, creatorId) {
+  return (
+    (work.author && work.author.find(y => y.identifier === creatorId)) ||
+    (work.director && work.director.find(y => y.identifier === creatorId)) ||
+    (work.illustrator && work.illustrator.find(y => y.identifier === creatorId))
+  )
+}
+
 function renderTagList(tags) {
   if (!tags) return '';
 
-  return tags.map(x => DB.data.tag[x] ? `<a href="#/tag/${x}" class="c-tag">${DB.data.tag[x].tag}</a>` : '').join(' ');
+  return tags.map(x => DB.data[x.identifier] ? `<a href="#/tag/${x.identifier}" class="c-tag">${DB.data[x.identifier].name}</a>` : '').join(' ');
 }
 
 function renderTextList(title = '', filter = () => { return true }) {
@@ -13,7 +25,9 @@ function renderTextList(title = '', filter = () => { return true }) {
 
   if (title) html += `<h2 class="c-page__title">${title}</h2>`;
 
-  const entries = Object.values(DB.data.novel).filter(filter);
+  const entries = Object.values(DB.data)
+    .filter(isCreativeWork)
+    .filter(filter);
 
   if (entries.length) {
     entries.forEach(entry => {
@@ -29,13 +43,13 @@ function renderTextList(title = '', filter = () => { return true }) {
 function renderTextListItem(entry) {
   return `
     <div class="c-tile">
-      <a class="c-tile__cover-link" href="#/novel/${entry.id}">
-        <strong>${entry.title}</strong>
+      <a class="c-tile__cover-link" href="#/novel/${entry.identifier}">
+        <strong>${entry.name}</strong>
       </a>
       ${entry.author ? `<br>
-      by ${entry.author.map(x => DB.data.author[x].name).join(', ')}` : ''}
+      by ${entry.author.map(x => DB.data[x.identifier].name).join(', ')}` : ''}
       <br>
-      ${renderTagList(entry.tags)}
+      ${renderTagList(entry.keywords)}
     </div>
   `
 }
@@ -43,94 +57,93 @@ function renderTextListItem(entry) {
 const router = (new Router())
   .add(/(about|contribute)/, (page) => document.querySelector('#page-' + page).innerHTML)
   .add(/tag\/(.+)/, (tagId) => renderTextList(
-    `Texts tagged <strong>#${DB.data.tag[tagId].tag}</strong>`,
-    novel => novel.tags && novel.tags.indexOf(tagId) > -1
+    `Texts tagged <strong>#${DB.data[tagId].name}</strong>`,
+    novel => novel.keywords && novel.keywords.find(k => k.identifier === tagId)
   ))
   .add(/genre\/(.+)/, (genreId) => renderTextList(
-    `<strong>${DB.data.genre[genreId].genre}</strong> texts`,
-    novel => novel.genre && novel.genre.indexOf(genreId) > -1
+    `<strong>${DB.data[genreId].name}</strong> texts`,
+    novel => novel.genre && novel.genre.indexOf(DB.data[genreId].name) > -1
   ))
   .add(/year\/(.+)/, (year) => renderTextList(
     `Texts from <strong>${year}</strong>`,
-    novel => novel.year === parseInt(year)
+    novel => novel.datePublished && novel.datePublished.substr(0, 4) === year
   ))
   .add(/creator\/(.+)/, (creatorId) => renderTextList(
-    `Texts by <strong>${DB.data.author[creatorId].name}</strong>`,
-    novel => (
-      (novel.author && novel.author.indexOf(creatorId) > -1) ||
-      (novel.filmDirector && novel.filmDirector.indexOf(creatorId) > -1) ||
-      (novel.illustrator && novel.illustrator.indexOf(creatorId) > -1)
-    )
+    `Texts by <strong>${DB.data[creatorId].name}</strong>`,
+    novel => isWorkByCreator(novel, creatorId)
   ))
   .add(/publisher\/(.+)/, (publisherId) => renderTextList(
-    `Texts published by <strong>${DB.data.publisher[publisherId].publisher}</strong>`,
-    novel => novel.publisher && novel.publisher.indexOf(publisherId) > -1
+    `Texts published by <strong>${DB.data[publisherId].name}</strong>`,
+    novel => novel.publisher && novel.publisher.find(p => p.identifier === publisherId)
   ))
   .add(/novel\/(.+)/, (id) => {
-    const entry = DB.data.novel[id];
+    const entry = DB.data[id];
 
-    entry.creators = [];
-    if (entry.author) entry.creators = entry.creators.concat(entry.author)
-    if (entry.filmDirector) entry.creators = entry.creators.concat(entry.filmDirector)
-    if (entry.illustrator) entry.creators = entry.creators.concat(entry.illustrator)
+    console.log(entry);
+
+    let creators = [];
+    if (entry.author) creators = creators.concat(entry.author)
+    if (entry.director) creators = creators.concat(entry.director)
+    if (entry.illustrator) creators = creators.concat(entry.illustrator)
+
 
     return `
-      <h2 class="c-page__title">${entry.title}</h2>
+      <h2 class="c-page__title">${entry.name}</h2>
       <div style="margin-bottom:1rem;">
-        ${renderTagList(entry.tags)}
+        ${renderTagList(entry.keywords)}
       </div>
 
       <table class="c-data-table">
         <tbody>
-        ${entry.creators ? `
+        ${creators ? `
           <tr>
             <th>Creator</th>
-            <td>${entry.creators.map(x => `
-              <a href="#/creator/${x}">${DB.data.author[x].name}</a>
+            <td>${creators.map(x => `
+              <a href="#/creator/${x.identifier}">${DB.data[x.identifier].name}</a>
             `).join(', ')}</td>
           </tr>
         ` : ''}
         ${entry.genre ? `
           <tr>
             <th>Genre</th>
-            <td>${entry.genre.map(x => DB.data.genre[x].genre).join(', ')}</td>
+            <td>${entry.genre.join(', ')}</td>
           </tr>
         ` : ''}
         ${entry.publisher ? `
           <tr>
             <th>Publisher</th>
             <td>${entry.publisher.map(x => `
-              <a href="#/publisher/${x}">${DB.data.publisher[x].publisher}</a>
+              <a href="#/publisher/${x.identifier}">${DB.data[x.identifier].name}</a>
             `).join(', ')}</td>
           </tr>
         ` : ''}
-        ${entry.notes ? `
+        ${entry.comment ? `
           <tr>
             <th>Notes</th>
-            <td>${entry.notes}</td>
+            <td>${entry.comment.text}</td>
           </tr>
         ` : ''}
-        ${entry.relatedTexts ? `
+        ${entry.citation ? `
           <tr>
             <th>Related texts</th>
             <td>
-              ${entry.relatedTexts.map((x, i) => {
-                const related = DB.data.novel[x];
+              ${entry.citation.map((x, i) => {
+                const related = DB.data[x.identifier];
                 return (i !== 0 ? '<br>' : '') + `
-                  <a href="#/novel/${related.id}">
-                    ${related.title}
+                  <a href="#/novel/${related.identifier}">
+                    ${related.name}
                   </a>
                 `;
               }).join('')}
             </td>
           </tr>
         ` : ''}
-        ${entry.link ? `
+        ${entry.url ? `
           <tr>
             <th>Link</th>
             <td>
-              <a href="${entry.link}">
-                ${entry.link}
+              <a href="${entry.url}">
+                ${entry.url}
               </a>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" class="o-svg-icon" title="External link">
                 <path d="M18 17.759v3.366C18 22.159 17.159 23 16.125 23H4.875C3.841 23 3 22.159 3 21.125V9.875C3 8.841 3.841 8 4.875 8h3.429l3.001-3h-6.43C2.182 5 0 7.182 0 9.875v11.25C0 23.818 2.182 26 4.875 26h11.25C18.818 26 21 23.818 21 21.125v-6.367l-3 3.001z" />
@@ -144,15 +157,12 @@ const router = (new Router())
     `;
   })
   .add(/creator/, () => {
-    const sortedCreators = Object.values(DB.data.author)
+    const sortedCreators = Object.values(DB.data)
+      .filter(entry => entry['@type'] === 'Person')
       .sort((a, b) => a.name.trim().split(' ').pop().localeCompare(b.name.trim().split(' ').pop()))
       .map(creator => ({
         ...creator,
-        works: Object.values(DB.data.novel).filter(x => (
-          (x.author && x.author.indexOf(creator.id) > -1) ||
-          (x.filmDirector && x.filmDirector.indexOf(creator.id) > -1) ||
-          (x.illustrator && x.illustrator.indexOf(creator.id) > -1)
-        )),
+        works: Object.values(DB.data).filter(x => isCreativeWork(x) && isWorkByCreator(x, creator.identifier)),
       }));
 
     return `
@@ -160,7 +170,7 @@ const router = (new Router())
       <ol>
         ${sortedCreators.map(creator => `
           <li>
-            <a href="/#/creator/${creator.id}">${creator.name}</a>
+            <a href="/#/creator/${creator.identifier}">${creator.name}</a>
             (${creator.works.length} works)
           </li>
         `).join('')}
@@ -168,19 +178,21 @@ const router = (new Router())
     `;
   })
   .add(/publisher/, () => {
-    const sortedPublishers = Object.values(DB.data.publisher)
-      .sort((a, b) => a.publisher.trim().localeCompare(b.publisher.trim()))
+    const sortedPublishers = Object.values(DB.data)
+      .filter(entry => entry['@type'] === 'Organization')
+      .sort((a, b) => a.name.trim().localeCompare(b.name.trim()))
       .map(publisher => ({
         ...publisher,
-        works: Object.values(DB.data.novel).filter(x => x.publisher && x.publisher.indexOf(publisher.id) > -1),
-      }));
+        works: Object.values(DB.data).filter(x => isCreativeWork(x) && x.publisher && x.publisher.find(p => p.identifier === publisher.identifier)),
+      }))
+      .filter(x => x.works.length > 0);
 
     return `
       <h2 class="c-page__title">All publishers</h2>
       <ol>
         ${sortedPublishers.map(publisher => `
           <li>
-            <a href="/#/publisher/${publisher.id}">${publisher.publisher}</a>
+            <a href="/#/publisher/${publisher.identifier}">${publisher.name}</a>
             (${publisher.works.length} works)
           </li>
         `).join('')}
@@ -196,11 +208,13 @@ function render() {
 }
 
 function renderSubnav() {
-  const sortedGenres = Object.values(DB.data.genre)
-    .sort((a, b) => a.genre.localeCompare(b.genre))
+  const sortedGenres = Object.values(DB.data)
+    .filter(entry => entry['@type'] === 'DefinedTerm' && entry.inDefinedTermSet && entry.inDefinedTermSet.identifier === 'genre')
+    .sort((a, b) => a.name.localeCompare(b.name))
 
-  const sortedYears = Object.values(DB.data.novel)
-    .map(x => x.year)
+  const sortedYears = Object.values(DB.data)
+    .filter(isCreativeWork)
+    .map(x => x.datePublished ? x.datePublished.substr(0, 4) : null)
     .filter(x => !!x)
     .filter((x, i, arr) => arr.indexOf(x) === i)
     .sort();
@@ -209,7 +223,7 @@ function renderSubnav() {
     <h3>Genre</h3>
     <ul>
       ${sortedGenres.map(genre => `
-        <li><a href="/#/genre/${genre.id}">${genre.genre}</a></li>
+        <li><a href="/#/genre/${genre.identifier}">${genre.name}</a></li>
       `).join('')}
     </ul>
 
@@ -233,7 +247,6 @@ document.querySelector('[data-js="force-refresh"]').addEventListener('click', e 
   e.preventDefault();
   DB.update({force: true}).then(render);
 });
-
 
 const $tray = document.querySelector('.c-subnav')
 Array.from(document.querySelectorAll('.c-subnav-toggle')).forEach($el => {

@@ -48,21 +48,12 @@ const DB = {
 
     if (!options.force && !this.shouldRefresh()) return;
 
-    const client = contentful.createClient({
-      space: "377d8odqein8",
-      accessToken: "aXthknsj9f-YeRyFxUbY2EvyLq0A8QDwpiz6BpE4JZQ",
-    });
-
-    const allEntries = await client.getEntries({
-      limit: 1000
-    });
+    const response = await fetch('./data.json');
+    const allEntries = await response.json();
     this.data = {};
 
-    allEntries.items.forEach((entry) => {
-      const {contentType, id, fields} = this.cleanObject(entry)
-      if (typeof this.data[contentType] === 'undefined') this.data[contentType] = {};
-
-      this.data[contentType][id] = fields;
+    allEntries.forEach((entry) => {
+      this.data[entry.identifier] = entry;
     });
 
     window.localStorage.setItem('db', this.serialize())
