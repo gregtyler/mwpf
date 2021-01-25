@@ -59,6 +59,12 @@ async function main() {
                     identifier: sys.id,
                     name: fields.tag
                 })
+            } else if (contentType === 'genre') {
+                return new Thing('DefinedTerm', {
+                    identifier: sys.id,
+                    name: fields.genre,
+                    inDefinedTermSet: new Thing('DefinedTermSet', {identifier: 'genre'})
+                })
             }
         })
         .filter(x => !!x)
