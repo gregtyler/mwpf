@@ -20,6 +20,8 @@ async function main() {
         limit: 1000
     });
 
+    console.log(`Downloading ${allEntries.items.length} items...`)
+
     const items = allEntries.items
         .map(({ sys, fields }) => {
             const contentType = sys.contentType.sys.id;
@@ -70,6 +72,8 @@ async function main() {
         .filter(x => !!x)
 
     fs.writeFileSync(path, JSON.stringify(items))
+
+    console.log('Download complete')
 }
 
 main();
