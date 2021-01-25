@@ -180,8 +180,12 @@ const router = (new Router())
       .sort((a, b) => a.name.trim().split(' ').pop().localeCompare(b.name.trim().split(' ').pop()))
       .map(creator => ({
         ...creator,
-        works: Object.values(DB.data).filter(x => isCreativeWork(x) && isWorkByCreator(x, creator.identifier)),
-      }));
+        works: Object.values(DB.data).filter(x => isCreativeWork(x) && (
+          (x.author && x.author.find(y => y.identifier === creator.identifier)) ||
+          (x.director && x.director.find(y => y.identifier === creator.identifier))
+        )),
+      }))
+      .filter(creator => creator.works.length > 0);
 
     return `
       <h2 class="c-page__title">All creators</h2>
