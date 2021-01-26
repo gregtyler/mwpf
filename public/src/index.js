@@ -17,7 +17,7 @@ function isWorkByCreator(work, creatorId) {
 function renderTagList(tags) {
   if (!tags) return '';
 
-  return tags.map(x => DB.data[x.identifier] ? `<a href="#/tag/${x.identifier}" class="c-tag">${DB.data[x.identifier].name}</a>` : '').join(' ');
+  return tags.map(x => DB.data[x.identifier] ? `<a href="/tag/${x.identifier}" class="c-tag">${DB.data[x.identifier].name}</a>` : '').join(' ');
 }
 
 function renderTextList(title = '', filter = () => { return true }) {
@@ -43,7 +43,7 @@ function renderTextList(title = '', filter = () => { return true }) {
 function renderTextListItem(entry) {
   return `
     <div class="c-tile">
-      <a class="c-tile__cover-link" href="#/novel/${entry.identifier}">
+      <a class="c-tile__cover-link" href="/novel/${entry.identifier}">
         <strong>${entry.name}</strong>
       </a>
       ${entry.author ? `<br>
@@ -94,7 +94,7 @@ const router = (new Router())
 
 
     return `
-      <div vocab="https://schema.org/" resource="#/novel/${entry.identifier}" typeof="${entry['@type']}">
+      <div vocab="https://schema.org/" resource="/novel/${entry.identifier}" typeof="${entry['@type']}">
         <h2 class="c-page__title" property="name" id="skip-to-content-link-target" tabindex="-1">
           ${entry.name}
         </h2>
@@ -108,7 +108,7 @@ const router = (new Router())
             <tr>
               <th>Creator</th>
               <td>${entry.author.map(x => `
-                <a href="#/creator/${x.identifier}" property="author">${DB.data[x.identifier].name}</a>
+                <a href="/creator/${x.identifier}" property="author">${DB.data[x.identifier].name}</a>
               `).join(', ')}</td>
             </tr>
           ` : ''}
@@ -116,7 +116,7 @@ const router = (new Router())
             <tr>
               <th>Director</th>
               <td>${entry.director.map(x => `
-                <a href="#/creator/${x.identifier}" property="director">${DB.data[x.identifier].name}</a>
+                <a href="/creator/${x.identifier}" property="director">${DB.data[x.identifier].name}</a>
               `).join(', ')}</td>
             </tr>
           ` : ''}
@@ -124,7 +124,7 @@ const router = (new Router())
             <tr>
               <th>Illustrator</th>
               <td>${entry.illustrator.map(x => `
-                <a href="#/creator/${x.identifier}" property="illustrator">${DB.data[x.identifier].name}</a>
+                <a href="/creator/${x.identifier}" property="illustrator">${DB.data[x.identifier].name}</a>
               `).join(', ')}</td>
             </tr>
           ` : ''}
@@ -138,7 +138,7 @@ const router = (new Router())
             <tr>
               <th>Publisher</th>
               <td>${entry.publisher.map(x => `
-                <a href="#/publisher/${x.identifier}" property="publisher">${DB.data[x.identifier].name}</a>
+                <a href="/publisher/${x.identifier}" property="publisher">${DB.data[x.identifier].name}</a>
               `).join(', ')}</td>
             </tr>
           ` : ''}
@@ -155,7 +155,7 @@ const router = (new Router())
                 ${entry.citation.map((x, i) => {
                   const related = DB.data[x.identifier];
                   return (i !== 0 ? '<br>' : '') + `
-                    <a href="#/novel/${related.identifier}" property="citation">
+                    <a href="/novel/${related.identifier}" property="citation">
                       ${related.name}
                     </a>
                   `;
@@ -202,7 +202,7 @@ const router = (new Router())
       <ol>
         ${sortedCreators.map(creator => `
           <li>
-            <a href="/#/creator/${creator.identifier}">${creator.name}</a>
+            <a href="/creator/${creator.identifier}">${creator.name}</a>
             (${creator.works.length} works)
           </li>
         `).join('')}
@@ -226,17 +226,23 @@ const router = (new Router())
       <ol>
         ${sortedPublishers.map(publisher => `
           <li>
-            <a href="/#/publisher/${publisher.identifier}">${publisher.name}</a>
+            <a href="/publisher/${publisher.identifier}">${publisher.name}</a>
             (${publisher.works.length} works)
           </li>
         `).join('')}
       </ol>
     `;
   })
-  .add(/.*/, () => renderTextList('All entries'))
+  .add(/^\/?$/, () => renderTextList('All entries'))
+  .add(/.+/, () => `
+    <h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">
+      Page not found
+    </h2>
+    <p>This page could not be found. Please use the navigation on the left, or <a href="/">return to the home page</a>.</p>
+  `)
 
 function render() {
-  const path = window.location.hash.substr(2);
+  const path = window.location.pathname.substr(1);
 
   $root.innerHTML = router.parse(path);
 }
@@ -257,14 +263,14 @@ function renderSubnav() {
     <h3>Genre</h3>
     <ul>
       ${sortedGenres.map(genre => `
-        <li><a href="/#/genre/${genre.identifier}">${genre.name}</a></li>
+        <li><a href="/genre/${genre.identifier}">${genre.name}</a></li>
       `).join('')}
     </ul>
 
     <h3>Publication year</h3>
     <ol class="c-subnav__grid-list">
     ${sortedYears.map(year => `
-      <li><a href="/#/year/${year}">${year}</a></li>
+      <li><a href="/year/${year}">${year}</a></li>
     `).join('')}
     </ol>
   `
@@ -274,7 +280,7 @@ DB.update()
     .then(() => {
       render();
       renderSubnav();
-      window.addEventListener('hashchange', render);
+      window.addEventListener('popstate', render);
     });
 
 document.querySelector('[data-js="force-refresh"]').addEventListener('click', e => {
