@@ -55,7 +55,13 @@ function renderTextListItem(entry) {
 }
 
 const router = (new Router())
-  .add(/(about|contribute)/, (page) => document.querySelector('#page-' + page).innerHTML)
+  .add(/(about|contribute)/, (page) => {
+    if (page === 'contribute') {
+      document.querySelector('#contribute-iframe').setAttribute('src', 'https://docs.google.com/forms/d/e/1FAIpQLSdYODHsrgR1HpR1gwXbqMKTjP9JuXkGqzty8t_53VliyOq8Hg/viewform?embedded=true');
+    }
+
+    return document.querySelector('#page-' + page).innerHTML
+  })
   .add(/tag\/(.+)/, (tagId) => renderTextList(
     `Texts tagged <strong>#${DB.data[tagId].name}</strong>`,
     novel => novel.keywords && novel.keywords.find(k => k.identifier === tagId)
