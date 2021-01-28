@@ -12,8 +12,8 @@ function arrayToRefs(arr, type) {
 
 async function main() {
     const client = contentful.createClient({
-        space: "377d8odqein8",
-        accessToken: "aXthknsj9f-YeRyFxUbY2EvyLq0A8QDwpiz6BpE4JZQ",
+        space: process.env.CONTENTFUL_API_SPACE,
+        accessToken: process.env.CONTENTFUL_API_KEY,
     });
 
     const allEntries = await client.getEntries({

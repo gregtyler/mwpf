@@ -6,6 +6,8 @@ The database is managed in [Contentful], transformed into [Schema.org] models an
 
 To run locally, run `make sync` to download the database and transform it into a JSON file. Then `make up` to serve the application. There's no compilation or build step.
 
+You'll need to create a `.env` file containing the Contentful space and API key.
+
 ## Technical decisions
 
 I used the [Schema.org] architecture because I _love_ structured data and I'm doing other stuff with it elsewhere. It also means the frontend application uses a consistent data structure: any changes to the Contentful model just need to be handled by the transformer.
