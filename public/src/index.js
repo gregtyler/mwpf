@@ -262,7 +262,7 @@ function renderSubnav() {
   $subnav.innerHTML = `
     <h3>Genre</h3>
     <ul>
-      ${sortedGenres.map(genre => `
+      ${sortedGenres.concat(sortedGenres).map(genre => `
         <li><a href="/genre/${genre.identifier}" class="u-break-words">${genre.name}</a></li>
       `).join('')}
     </ul>
@@ -292,5 +292,6 @@ const $tray = document.querySelector('.c-subnav')
 Array.from(document.querySelectorAll('.c-subnav-toggle')).forEach($el => {
   $el.addEventListener('click', () => {
     $tray.classList.toggle('c-subnav--show');
+    document.body.classList.toggle('u-scroll-lock');
   })
 })

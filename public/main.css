@@ -49,6 +49,7 @@ body {
     transform: translateX(-100%);
     transition: transform .5s cubic-bezier(0.075, 0.82, 0.165, 1);
     z-index: 10;
+    overflow: auto;
   }
 
   .c-subnav--show {
@@ -213,6 +214,10 @@ a:hover {
 
 .u-break-words {
   word-break: break-word;
+}
+
+.u-scroll-lock {
+  overflow: hidden;
 }
 
 @font-face {
