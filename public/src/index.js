@@ -263,7 +263,7 @@ function renderSubnav() {
     <h3>Genre</h3>
     <ul>
       ${sortedGenres.map(genre => `
-        <li><a href="/genre/${genre.identifier}">${genre.name}</a></li>
+        <li><a href="/genre/${genre.identifier}" class="u-break-words">${genre.name}</a></li>
       `).join('')}
     </ul>
 

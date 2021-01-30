@@ -211,6 +211,10 @@ a:hover {
   fill: currentcolor;
 }
 
+.u-break-words {
+  word-break: break-word;
+}
+
 @font-face {
   font-family: 'Lato';
   font-style: italic;
