@@ -48,7 +48,7 @@ const DB = {
 
     if (!options.force && !this.shouldRefresh()) return;
 
-    const response = await fetch('./data.json');
+    const response = await fetch('/data.json');
     const allEntries = await response.json();
     this.data = {};
 
