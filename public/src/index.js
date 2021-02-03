@@ -142,6 +142,16 @@ const router = (new Router())
               `).join(', ')}</td>
             </tr>
           ` : ''}
+          ${entry.datePublished ? `
+            <tr>
+              <th>Year of publication</th>
+              <td>
+                <a href="/year/${entry.datePublished.substr(0, 4)}" property="datePublished" content="${entry.datePublished}">
+                  ${entry.datePublished.substr(0, 4)}
+                </a>
+              </td>
+            </tr>
+          ` : ''}
           ${entry.comment ? `
             <tr>
               <th>Notes</th>

@@ -201,6 +201,10 @@ a:hover {
   border-top: 1px solid hsla(0, 0%, 0%, 0.2);
 }
 
+.c-data-table th {
+  width: 25%;
+}
+
 .c-data-table th, .c-data-table td {
   padding: .5rem;
   text-align: left;
