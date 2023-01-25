@@ -85,8 +85,6 @@ const router = (new Router())
   .add(/novel\/(.+)/, (id) => {
     const entry = DB.data[id];
 
-    console.log(entry);
-
     let creators = [];
     if (entry.author) creators = creators.concat(entry.author)
     if (entry.director) creators = creators.concat(entry.director)
