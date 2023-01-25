@@ -135,6 +135,10 @@ a:hover {
   font-weight: normal;
 }
 
+.c-page__clamp {
+  max-width: 40em;
+}
+
 .c-footer {
   padding: 1rem;
 }
