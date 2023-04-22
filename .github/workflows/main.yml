@@ -20,6 +20,10 @@ jobs:
         env:
           CONTENTFUL_API_SPACE: ${{ secrets.CONTENTFUL_API_SPACE }}
           CONTENTFUL_API_KEY: ${{ secrets.CONTENTFUL_API_KEY }}
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './public'
 
   deploy:
     needs: build
@@ -33,10 +37,6 @@ jobs:
     steps:
       - name: Setup Pages
         uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: './public'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
