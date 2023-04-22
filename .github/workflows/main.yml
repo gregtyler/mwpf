@@ -17,6 +17,9 @@ jobs:
           node-version: 'lts/*'
       - run: npm install
       - run: npm run build
+        env:
+          CONTENTFUL_API_SPACE: ${{ secrets.CONTENTFUL_API_SPACE }}
+          CONTENTFUL_API_KEY: ${{ secrets.CONTENTFUL_API_KEY }}
 
   deploy:
     needs: build
