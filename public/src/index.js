@@ -250,9 +250,17 @@ const router = (new Router())
   `)
 
 function render() {
-  const path = window.location.pathname.substr(1);
+  if (window.location.pathname.length > 3) {
+    const path = window.location.pathname.substring(1);
 
-  $root.innerHTML = router.parse(path);
+    $root.innerHTML = router.parse(path);
+  } else {
+    const path = window.location.search.substring(2);
+
+    window.history.replaceState(null, "", "/" + path);
+
+    $root.innerHTML = router.parse(path);
+  }
 }
 
 function renderSubnav() {
