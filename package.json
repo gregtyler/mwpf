@@ -2,6 +2,9 @@
   "name": "schema",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "build": "node download.js ./public/data.json"
+  },
   "license": "MIT",
   "dependencies": {
     "contentful": "^8.1.7"
