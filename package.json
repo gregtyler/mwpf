@@ -7,6 +7,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "contentful": "^8.1.7"
+    "contentful": "^10.0.0"
   }
 }
