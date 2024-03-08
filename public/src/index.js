@@ -258,7 +258,6 @@ function render() {
 function renderSubnav() {
   const sortedGenres = Object.values(DB.data)
     .filter(entry => entry['@type'] === 'DefinedTerm' && entry.inDefinedTermSet && entry.inDefinedTermSet.identifier === 'genre')
-    .filter((v,i,a)=>a.findIndex(v2=>(v2.identifier===v.identifier))===i)
     .sort((a, b) => a.name.localeCompare(b.name))
 
   const sortedYears = Object.values(DB.data)
@@ -271,7 +270,7 @@ function renderSubnav() {
   $subnav.innerHTML = `
     <h3>Genre</h3>
     <ul>
-      ${sortedGenres.concat(sortedGenres).map(genre => `
+      ${sortedGenres.map(genre => `
         <li><a href="/genre/${genre.identifier}" class="u-break-words">${genre.name}</a></li>
       `).join('')}
     </ul>
