@@ -270,7 +270,7 @@ function renderSubnav() {
   $subnav.innerHTML = `
     <h3>Genre</h3>
     <ul>
-      ${sortedGenres.concat(sortedGenres).map(genre => `
+      ${sortedGenres.map(genre => `
         <li><a href="/genre/${genre.identifier}" class="u-break-words">${genre.name}</a></li>
       `).join('')}
     </ul>
