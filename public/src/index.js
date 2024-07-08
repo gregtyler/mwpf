@@ -1,40 +1,57 @@
 /** globals DB, Router */
-const $root = document.querySelector('#root');
-const $subnav = document.querySelector('#subnav');
+const $root = document.querySelector("#root");
+const $subnav = document.querySelector("#subnav");
 
 function isCreativeWork(entry) {
-  return entry['@type'] === 'CreativeWork' || entry['@type'] === 'Movie' || entry['@type'] === 'Book';
+  return (
+    entry["@type"] === "CreativeWork" ||
+    entry["@type"] === "Movie" ||
+    entry["@type"] === "Book"
+  );
 }
 
 function isWorkByCreator(work, creatorId) {
   return (
-    (work.author && work.author.find(y => y.identifier === creatorId)) ||
-    (work.director && work.director.find(y => y.identifier === creatorId)) ||
-    (work.illustrator && work.illustrator.find(y => y.identifier === creatorId))
-  )
+    (work.author && work.author.find((y) => y.identifier === creatorId)) ||
+    (work.director && work.director.find((y) => y.identifier === creatorId)) ||
+    (work.illustrator &&
+      work.illustrator.find((y) => y.identifier === creatorId))
+  );
 }
 
 function renderTagList(tags) {
-  if (!tags) return '';
+  if (!tags) return "";
 
-  return tags.map(x => DB.data[x.identifier] ? `<a href="/tag/${x.identifier}" class="c-tag">${DB.data[x.identifier].name}</a>` : '').join(' ');
+  return tags
+    .map((x) =>
+      DB.data[x.identifier]
+        ? `<a href="/tag/${x.identifier}" class="c-tag">${
+            DB.data[x.identifier].name
+          }</a>`
+        : ""
+    )
+    .join(" ");
 }
 
-function renderTextList(title = '', filter = () => { return true }) {
-  let html = '';
+function renderTextList(
+  title = "",
+  filter = () => {
+    return true;
+  }
+) {
+  let html = "";
 
-  if (title) html += `<h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">${title}</h2>`;
+  if (title)
+    html += `<h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">${title}</h2>`;
 
-  const entries = Object.values(DB.data)
-    .filter(isCreativeWork)
-    .filter(filter);
+  const entries = Object.values(DB.data).filter(isCreativeWork).filter(filter);
 
   if (entries.length) {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       html += renderTextListItem(entry);
-    })
+    });
   } else {
-    html += '<p>No results found.</p>';
+    html += "<p>No results found.</p>";
   }
 
   return html;
@@ -46,53 +63,77 @@ function renderTextListItem(entry) {
       <a class="c-tile__cover-link" href="/novel/${entry.identifier}">
         <strong>${entry.name}</strong>
       </a>
-      ${entry.author ? `<br>
-      by ${entry.author.map(x => DB.data[x.identifier].name).join(', ')}` : ''}
+      ${
+        entry.author
+          ? `<br>
+      by ${entry.author.map((x) => DB.data[x.identifier].name).join(", ")}`
+          : ""
+      }
       <br>
       ${renderTagList(entry.keywords)}
     </div>
-  `
+  `;
 }
 
-const router = (new Router())
+const router = new Router()
   .add(/(about|contribute)/, (page) => {
-    if (page === 'contribute') {
-      document.querySelector('#contribute-iframe').setAttribute('src', 'https://docs.google.com/forms/d/e/1FAIpQLSdYODHsrgR1HpR1gwXbqMKTjP9JuXkGqzty8t_53VliyOq8Hg/viewform?embedded=true');
+    if (page === "contribute") {
+      document
+        .querySelector("#contribute-iframe")
+        .setAttribute(
+          "src",
+          "https://docs.google.com/forms/d/e/1FAIpQLSdYODHsrgR1HpR1gwXbqMKTjP9JuXkGqzty8t_53VliyOq8Hg/viewform?embedded=true"
+        );
     }
 
-    return document.querySelector('#page-' + page).innerHTML
+    return document.querySelector("#page-" + page).innerHTML;
   })
-  .add(/tag\/(.+)/, (tagId) => renderTextList(
-    `Texts tagged <strong>#${DB.data[tagId].name}</strong>`,
-    novel => novel.keywords && novel.keywords.find(k => k.identifier === tagId)
-  ))
-  .add(/genre\/(.+)/, (genreId) => renderTextList(
-    `<strong>${DB.data[genreId].name}</strong> texts`,
-    novel => novel.genre && novel.genre.indexOf(DB.data[genreId].name) > -1
-  ))
-  .add(/year\/(.+)/, (year) => renderTextList(
-    `Texts from <strong>${year}</strong>`,
-    novel => novel.datePublished && novel.datePublished.substr(0, 4) === year
-  ))
-  .add(/creator\/(.+)/, (creatorId) => renderTextList(
-    `Texts by <strong>${DB.data[creatorId].name}</strong>`,
-    novel => isWorkByCreator(novel, creatorId)
-  ))
-  .add(/publisher\/(.+)/, (publisherId) => renderTextList(
-    `Texts published by <strong>${DB.data[publisherId].name}</strong>`,
-    novel => novel.publisher && novel.publisher.find(p => p.identifier === publisherId)
-  ))
+  .add(/tag\/(.+)/, (tagId) =>
+    renderTextList(
+      `Texts tagged <strong>#${DB.data[tagId].name}</strong>`,
+      (novel) =>
+        novel.keywords && novel.keywords.find((k) => k.identifier === tagId)
+    )
+  )
+  .add(/genre\/(.+)/, (genreId) =>
+    renderTextList(
+      `<strong>${DB.data[genreId].name}</strong> texts`,
+      (novel) => novel.genre && novel.genre.indexOf(DB.data[genreId].name) > -1
+    )
+  )
+  .add(/year\/(.+)/, (year) =>
+    renderTextList(
+      `Texts from <strong>${year}</strong>`,
+      (novel) =>
+        novel.datePublished && novel.datePublished.substr(0, 4) === year
+    )
+  )
+  .add(/creator\/(.+)/, (creatorId) =>
+    renderTextList(
+      `Texts by <strong>${DB.data[creatorId].name}</strong>`,
+      (novel) => isWorkByCreator(novel, creatorId)
+    )
+  )
+  .add(/publisher\/(.+)/, (publisherId) =>
+    renderTextList(
+      `Texts published by <strong>${DB.data[publisherId].name}</strong>`,
+      (novel) =>
+        novel.publisher &&
+        novel.publisher.find((p) => p.identifier === publisherId)
+    )
+  )
   .add(/novel\/(.+)/, (id) => {
     const entry = DB.data[id];
 
     let creators = [];
-    if (entry.author) creators = creators.concat(entry.author)
-    if (entry.director) creators = creators.concat(entry.director)
-    if (entry.illustrator) creators = creators.concat(entry.illustrator)
-
+    if (entry.author) creators = creators.concat(entry.author);
+    if (entry.director) creators = creators.concat(entry.director);
+    if (entry.illustrator) creators = creators.concat(entry.illustrator);
 
     return `
-      <div vocab="https://schema.org/" resource="/novel/${entry.identifier}" typeof="${entry['@type']}">
+      <div vocab="https://schema.org/" resource="/novel/${
+        entry.identifier
+      }" typeof="${entry["@type"]}">
         <h2 class="c-page__title" property="name" id="skip-to-content-link-target" tabindex="-1">
           ${entry.name}
         </h2>
@@ -102,76 +143,152 @@ const router = (new Router())
 
         <table class="c-data-table">
           <tbody>
-          ${entry.author ? `
+          ${
+            entry.author
+              ? `
             <tr>
               <th>Creator</th>
-              <td>${entry.author.map(x => `
-                <a href="/creator/${x.identifier}" property="author">${DB.data[x.identifier].name}</a>
-              `).join(', ')}</td>
+              <td>${entry.author
+                .map(
+                  (x) => `
+                <a href="/creator/${x.identifier}" property="author">${
+                    DB.data[x.identifier].name
+                  }</a>
+              `
+                )
+                .join(", ")}</td>
             </tr>
-          ` : ''}
-          ${entry.director ? `
+          `
+              : ""
+          }
+          ${
+            entry.director
+              ? `
             <tr>
               <th>Director</th>
-              <td>${entry.director.map(x => `
-                <a href="/creator/${x.identifier}" property="director">${DB.data[x.identifier].name}</a>
-              `).join(', ')}</td>
+              <td>${entry.director
+                .map(
+                  (x) => `
+                <a href="/creator/${x.identifier}" property="director">${
+                    DB.data[x.identifier].name
+                  }</a>
+              `
+                )
+                .join(", ")}</td>
             </tr>
-          ` : ''}
-          ${entry.illustrator ? `
+          `
+              : ""
+          }
+          ${
+            entry.illustrator
+              ? `
             <tr>
               <th>Illustrator</th>
-              <td>${entry.illustrator.map(x => `
-                <a href="/creator/${x.identifier}" property="illustrator">${DB.data[x.identifier].name}</a>
-              `).join(', ')}</td>
+              <td>${entry.illustrator
+                .map(
+                  (x) => `
+                <a href="/creator/${x.identifier}" property="illustrator">${
+                    DB.data[x.identifier].name
+                  }</a>
+              `
+                )
+                .join(", ")}</td>
             </tr>
-          ` : ''}
-          ${entry.genre ? `
+          `
+              : ""
+          }
+          ${
+            entry.genre
+              ? `
             <tr>
               <th>Genre</th>
-              <td property="genre">${entry.genre.join(', ')}</td>
+              <td property="genre">${entry.genre.join(", ")}</td>
             </tr>
-          ` : ''}
-          ${entry.publisher ? `
+          `
+              : ""
+          }
+          ${
+            entry.publisher
+              ? `
             <tr>
               <th>Publisher</th>
-              <td>${entry.publisher.map(x => `
-                <a href="/publisher/${x.identifier}" property="publisher">${DB.data[x.identifier].name}</a>
-              `).join(', ')}</td>
+              <td>${entry.publisher
+                .map(
+                  (x) => `
+                <a href="/publisher/${x.identifier}" property="publisher">${
+                    DB.data[x.identifier].name
+                  }</a>
+              `
+                )
+                .join(", ")}</td>
             </tr>
-          ` : ''}
-          ${entry.datePublished ? `
+          `
+              : ""
+          }
+          ${
+            entry.datePublished
+              ? `
             <tr>
               <th>Year of publication</th>
               <td>
-                <a href="/year/${entry.datePublished.substr(0, 4)}" property="datePublished" content="${entry.datePublished}">
+                <a href="/year/${entry.datePublished.substr(
+                  0,
+                  4
+                )}" property="datePublished" content="${entry.datePublished}">
                   ${entry.datePublished.substr(0, 4)}
                 </a>
               </td>
             </tr>
-          ` : ''}
-          ${entry.comment ? `
+          `
+              : ""
+          }
+          ${
+            entry.comment
+              ? `
             <tr>
               <th>Notes</th>
               <td property="comment">${entry.comment.text}</td>
             </tr>
-          ` : ''}
-          ${entry.citation ? `
+          `
+              : ""
+          }
+          ${
+            entry.thumbnailUrl
+              ? `
+            <tr>
+              <th>Image</th>
+              <td property="thumbnail"><img src="${entry.thumbnailUrl}" alt="Front cover of ${entry.name}" /></td>
+            </tr>
+        `
+              : ""
+          }
+          ${
+            entry.citation
+              ? `
             <tr>
               <th>Related texts</th>
               <td>
-                ${entry.citation.map((x, i) => {
-                  const related = DB.data[x.identifier];
-                  return (i !== 0 ? '<br>' : '') + `
+                ${entry.citation
+                  .map((x, i) => {
+                    const related = DB.data[x.identifier];
+                    return (
+                      (i !== 0 ? "<br>" : "") +
+                      `
                     <a href="/novel/${related.identifier}" property="citation">
                       ${related.name}
                     </a>
-                  `;
-                }).join('')}
+                  `
+                    );
+                  })
+                  .join("")}
               </td>
             </tr>
-          ` : ''}
-          ${entry.url ? `
+          `
+              : ""
+          }
+          ${
+            entry.url
+              ? `
             <tr>
               <th>Link</th>
               <td>
@@ -184,7 +301,9 @@ const router = (new Router())
                 </svg>
               </td>
             </tr>
-          ` : ''}
+          `
+              : ""
+          }
           </tbody>
         </table>
       </div>
@@ -192,62 +311,88 @@ const router = (new Router())
   })
   .add(/creator/, () => {
     const sortedCreators = Object.values(DB.data)
-      .filter(entry => entry['@type'] === 'Person')
-      .sort((a, b) => a.name.trim().split(' ').pop().localeCompare(b.name.trim().split(' ').pop()))
-      .map(creator => ({
+      .filter((entry) => entry["@type"] === "Person")
+      .sort((a, b) =>
+        a.name
+          .trim()
+          .split(" ")
+          .pop()
+          .localeCompare(b.name.trim().split(" ").pop())
+      )
+      .map((creator) => ({
         ...creator,
-        works: Object.values(DB.data).filter(x => isCreativeWork(x) && (
-          (x.author && x.author.find(y => y.identifier === creator.identifier)) ||
-          (x.director && x.director.find(y => y.identifier === creator.identifier))
-        )),
+        works: Object.values(DB.data).filter(
+          (x) =>
+            isCreativeWork(x) &&
+            ((x.author &&
+              x.author.find((y) => y.identifier === creator.identifier)) ||
+              (x.director &&
+                x.director.find((y) => y.identifier === creator.identifier)))
+        ),
       }))
-      .filter(creator => creator.works.length > 0);
+      .filter((creator) => creator.works.length > 0);
 
     return `
       <h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">
         All creators
       </h2>
       <ol>
-        ${sortedCreators.map(creator => `
+        ${sortedCreators
+          .map(
+            (creator) => `
           <li>
             <a href="/creator/${creator.identifier}">${creator.name}</a>
             (${creator.works.length} works)
           </li>
-        `).join('')}
+        `
+          )
+          .join("")}
       </ol>
     `;
   })
   .add(/publisher/, () => {
     const sortedPublishers = Object.values(DB.data)
-      .filter(entry => entry['@type'] === 'Organization')
+      .filter((entry) => entry["@type"] === "Organization")
       .sort((a, b) => a.name.trim().localeCompare(b.name.trim()))
-      .map(publisher => ({
+      .map((publisher) => ({
         ...publisher,
-        works: Object.values(DB.data).filter(x => isCreativeWork(x) && x.publisher && x.publisher.find(p => p.identifier === publisher.identifier)),
+        works: Object.values(DB.data).filter(
+          (x) =>
+            isCreativeWork(x) &&
+            x.publisher &&
+            x.publisher.find((p) => p.identifier === publisher.identifier)
+        ),
       }))
-      .filter(x => x.works.length > 0);
+      .filter((x) => x.works.length > 0);
 
     return `
       <h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">
         All publishers
       </h2>
       <ol>
-        ${sortedPublishers.map(publisher => `
+        ${sortedPublishers
+          .map(
+            (publisher) => `
           <li>
             <a href="/publisher/${publisher.identifier}">${publisher.name}</a>
             (${publisher.works.length} works)
           </li>
-        `).join('')}
+        `
+          )
+          .join("")}
       </ol>
     `;
   })
-  .add(/^\/?$/, () => renderTextList('All entries'))
-  .add(/.+/, () => `
+  .add(/^\/?$/, () => renderTextList("All entries"))
+  .add(
+    /.+/,
+    () => `
     <h2 class="c-page__title" id="skip-to-content-link-target" tabindex="-1">
       Page not found
     </h2>
     <p>This page could not be found. Please use the navigation on the left, or <a href="/">return to the home page</a>.</p>
-  `)
+  `
+  );
 
 function render() {
   const path = window.location.pathname.substr(1);
@@ -257,49 +402,63 @@ function render() {
 
 function renderSubnav() {
   const sortedGenres = Object.values(DB.data)
-    .filter(entry => entry['@type'] === 'DefinedTerm' && entry.inDefinedTermSet && entry.inDefinedTermSet.identifier === 'genre')
-    .sort((a, b) => a.name.localeCompare(b.name))
+    .filter(
+      (entry) =>
+        entry["@type"] === "DefinedTerm" &&
+        entry.inDefinedTermSet &&
+        entry.inDefinedTermSet.identifier === "genre"
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const sortedYears = Object.values(DB.data)
     .filter(isCreativeWork)
-    .map(x => x.datePublished ? x.datePublished.substr(0, 4) : null)
-    .filter(x => !!x)
+    .map((x) => (x.datePublished ? x.datePublished.substr(0, 4) : null))
+    .filter((x) => !!x)
     .filter((x, i, arr) => arr.indexOf(x) === i)
     .sort();
 
   $subnav.innerHTML = `
     <h3>Genre</h3>
     <ul>
-      ${sortedGenres.map(genre => `
+      ${sortedGenres
+        .map(
+          (genre) => `
         <li><a href="/genre/${genre.identifier}" class="u-break-words">${genre.name}</a></li>
-      `).join('')}
+      `
+        )
+        .join("")}
     </ul>
 
     <h3>Publication year</h3>
     <ol class="c-subnav__grid-list">
-    ${sortedYears.map(year => `
+    ${sortedYears
+      .map(
+        (year) => `
       <li><a href="/year/${year}">${year}</a></li>
-    `).join('')}
+    `
+      )
+      .join("")}
     </ol>
-  `
+  `;
 }
 
-DB.update()
-    .then(() => {
-      render();
-      renderSubnav();
-      window.addEventListener('popstate', render);
-    });
-
-document.querySelector('[data-js="force-refresh"]').addEventListener('click', e => {
-  e.preventDefault();
-  DB.update({force: true}).then(render);
+DB.update().then(() => {
+  render();
+  renderSubnav();
+  window.addEventListener("popstate", render);
 });
 
-const $tray = document.querySelector('.c-subnav')
-Array.from(document.querySelectorAll('.c-subnav-toggle')).forEach($el => {
-  $el.addEventListener('click', () => {
-    $tray.classList.toggle('c-subnav--show');
-    document.body.classList.toggle('u-scroll-lock');
-  })
-})
+document
+  .querySelector('[data-js="force-refresh"]')
+  .addEventListener("click", (e) => {
+    e.preventDefault();
+    DB.update({ force: true }).then(render);
+  });
+
+const $tray = document.querySelector(".c-subnav");
+Array.from(document.querySelectorAll(".c-subnav-toggle")).forEach(($el) => {
+  $el.addEventListener("click", () => {
+    $tray.classList.toggle("c-subnav--show");
+    document.body.classList.toggle("u-scroll-lock");
+  });
+});
