@@ -74,6 +74,7 @@ async function main() {
         return new Thing("DefinedTerm", {
           identifier: sys.id,
           name: fields.genre,
+          image: fields?.image?.fields?.file.url ?? null,
           inDefinedTermSet: new Thing("DefinedTermSet", {
             identifier: "genre",
           }),

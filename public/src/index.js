@@ -47,9 +47,11 @@ function renderTextList(
   const entries = Object.values(DB.data).filter(isCreativeWork).filter(filter);
 
   if (entries.length) {
+    html += '<div class="c-tile__grid-container">';
     entries.forEach((entry) => {
       html += renderTextListItem(entry);
     });
+    html += "</div>";
   } else {
     html += "<p>No results found.</p>";
   }
@@ -59,18 +61,28 @@ function renderTextList(
 
 function renderTextListItem(entry) {
   return `
-    <div class="c-tile">
-      <a class="c-tile__cover-link" href="/novel/${entry.identifier}">
-        <strong>${entry.name}</strong>
-      </a>
+    <div class="c-tile"
       ${
-        entry.author
-          ? `<br>
-      by ${entry.author.map((x) => DB.data[x.identifier].name).join(", ")}`
+        entry.thumbnailUrl
+          ? `
+            style="background-image: url('${entry.thumbnailUrl}')"
+          `
           : ""
       }
-      <br>
-      ${renderTagList(entry.keywords)}
+    >
+      <div class="c-tile__contents">
+        <a class="c-tile__cover-link" href="/novel/${entry.identifier}">
+          <strong>${entry.name}</strong>
+        </a>
+        ${
+          entry.author
+            ? `<br>
+        by ${entry.author.map((x) => DB.data[x.identifier].name).join(", ")}`
+            : ""
+        }
+        <br>
+        ${renderTagList(entry.keywords)}
+      </div>
     </div>
   `;
 }
@@ -133,180 +145,181 @@ const router = new Router()
     return `
       <div vocab="https://schema.org/" resource="/novel/${
         entry.identifier
-      }" typeof="${entry["@type"]}">
-        <h2 class="c-page__title" property="name" id="skip-to-content-link-target" tabindex="-1">
-          ${entry.name}
-          <small class="c-page__subtitle">by ${entry.author.map((a) => DB.data[a.identifier].name).join(", ")}</small>
-        </h2>
-        <div style="margin-bottom:1rem;">
-          ${renderTagList(entry.keywords)}
-        </div>
+      }" typeof="${entry["@type"]}" class="c-entry">
+        <div class="c-entry__fill">
+          <h2 class="c-page__title" property="name" id="skip-to-content-link-target" tabindex="-1">
+            ${entry.name}
+            <small class="c-page__subtitle">by ${entry.author
+              .map((a) => DB.data[a.identifier].name)
+              .join(", ")}</small>
+          </h2>
+          <div style="margin-bottom:1rem;">
+            ${renderTagList(entry.keywords)}
+          </div>
 
-        <table class="c-data-table">
-          <tbody>
-          ${
-            entry.author
-              ? `
-            <tr>
-              <th>Creator</th>
-              <td>${entry.author
-                .map(
-                  (x) => `
-                <a href="/creator/${x.identifier}" property="author">${
-                    DB.data[x.identifier].name
-                  }</a>
-              `
-                )
-                .join(", ")}</td>
-            </tr>
-          `
-              : ""
-          }
-          ${
-            entry.director
-              ? `
-            <tr>
-              <th>Director</th>
-              <td>${entry.director
-                .map(
-                  (x) => `
-                <a href="/creator/${x.identifier}" property="director">${
-                    DB.data[x.identifier].name
-                  }</a>
-              `
-                )
-                .join(", ")}</td>
-            </tr>
-          `
-              : ""
-          }
-          ${
-            entry.illustrator
-              ? `
-            <tr>
-              <th>Illustrator</th>
-              <td>${entry.illustrator
-                .map(
-                  (x) => `
-                <a href="/creator/${x.identifier}" property="illustrator">${
-                    DB.data[x.identifier].name
-                  }</a>
-              `
-                )
-                .join(", ")}</td>
-            </tr>
-          `
-              : ""
-          }
-          ${
-            entry.genre
-              ? `
-            <tr>
-              <th>Genre</th>
-              <td property="genre">${entry.genre.join(", ")}</td>
-            </tr>
-          `
-              : ""
-          }
-          ${
-            entry.publisher
-              ? `
-            <tr>
-              <th>Publisher</th>
-              <td>${entry.publisher
-                .map(
-                  (x) => `
-                <a href="/publisher/${x.identifier}" property="publisher">${
-                    DB.data[x.identifier].name
-                  }</a>
-              `
-                )
-                .join(", ")}</td>
-            </tr>
-          `
-              : ""
-          }
-          ${
-            entry.datePublished
-              ? `
-            <tr>
-              <th>Year of publication</th>
-              <td>
-                <a href="/year/${entry.datePublished.substr(
-                  0,
-                  4
-                )}" property="datePublished" content="${entry.datePublished}">
-                  ${entry.datePublished.substr(0, 4)}
-                </a>
-              </td>
-            </tr>
-          `
-              : ""
-          }
-          ${
-            entry.comment
-              ? `
-            <tr>
-              <th>Notes</th>
-              <td property="comment">${entry.comment.text}</td>
-            </tr>
-          `
-              : ""
-          }
-          ${
-            entry.thumbnailUrl
-              ? `
-            <tr>
-              <th>Image</th>
-              <td property="thumbnail"><img src="${entry.thumbnailUrl}" alt="Front cover of ${entry.name}" /></td>
-            </tr>
+          <table class="c-data-table">
+            <tbody>
+            ${
+              entry.author
+                ? `
+              <tr>
+                <th>Creator</th>
+                <td>${entry.author
+                  .map(
+                    (x) => `
+                  <a href="/creator/${x.identifier}" property="author">${
+                      DB.data[x.identifier].name
+                    }</a>
+                `
+                  )
+                  .join(", ")}</td>
+              </tr>
+            `
+                : ""
+            }
+            ${
+              entry.director
+                ? `
+              <tr>
+                <th>Director</th>
+                <td>${entry.director
+                  .map(
+                    (x) => `
+                  <a href="/creator/${x.identifier}" property="director">${
+                      DB.data[x.identifier].name
+                    }</a>
+                `
+                  )
+                  .join(", ")}</td>
+              </tr>
+            `
+                : ""
+            }
+            ${
+              entry.illustrator
+                ? `
+              <tr>
+                <th>Illustrator</th>
+                <td>${entry.illustrator
+                  .map(
+                    (x) => `
+                  <a href="/creator/${x.identifier}" property="illustrator">${
+                      DB.data[x.identifier].name
+                    }</a>
+                `
+                  )
+                  .join(", ")}</td>
+              </tr>
+            `
+                : ""
+            }
+            ${
+              entry.genre
+                ? `
+              <tr>
+                <th>Genre</th>
+                <td property="genre">${entry.genre.join(", ")}</td>
+              </tr>
+            `
+                : ""
+            }
+            ${
+              entry.publisher
+                ? `
+              <tr>
+                <th>Publisher</th>
+                <td>${entry.publisher
+                  .map(
+                    (x) => `
+                  <a href="/publisher/${x.identifier}" property="publisher">${
+                      DB.data[x.identifier].name
+                    }</a>
+                `
+                  )
+                  .join(", ")}</td>
+              </tr>
+            `
+                : ""
+            }
+            ${
+              entry.datePublished
+                ? `
+              <tr>
+                <th>Year of publication</th>
+                <td>
+                  <a href="/year/${entry.datePublished.substr(
+                    0,
+                    4
+                  )}" property="datePublished" content="${entry.datePublished}">
+                    ${entry.datePublished.substr(0, 4)}
+                  </a>
+                </td>
+              </tr>
+            `
+                : ""
+            }
+            ${
+              entry.comment
+                ? `
+              <tr>
+                <th>Notes</th>
+                <td property="comment">${entry.comment.text}</td>
+              </tr>
+            `
+                : ""
+            }
+            ${
+              entry.citation
+                ? `
+              <tr>
+                <th>Related texts</th>
+                <td>
+                  ${entry.citation
+                    .map((x, i) => {
+                      const related = DB.data[x.identifier];
+                      return (
+                        (i !== 0 ? "<br>" : "") +
+                        `
+                      <a href="/novel/${related.identifier}" property="citation">
+                        ${related.name}
+                      </a>
+                    `
+                      );
+                    })
+                    .join("")}
+                </td>
+              </tr>
+            `
+                : ""
+            }
+            ${
+              entry.url
+                ? `
+              <tr>
+                <th>Link</th>
+                <td>
+                  <a href="${entry.url}" property="url">
+                    ${entry.url}
+                  </a>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" class="o-svg-icon" title="External link">
+                    <path d="M18 17.759v3.366C18 22.159 17.159 23 16.125 23H4.875C3.841 23 3 22.159 3 21.125V9.875C3 8.841 3.841 8 4.875 8h3.429l3.001-3h-6.43C2.182 5 0 7.182 0 9.875v11.25C0 23.818 2.182 26 4.875 26h11.25C18.818 26 21 23.818 21 21.125v-6.367l-3 3.001z" />
+                    <path d="M22.581 0H12.322c-1.886.002-1.755.51-.76 1.504l3.22 3.22-5.52 5.519c-1.145 1.144-1.144 2.998 0 4.141l2.41 2.411c1.144 1.141 2.996 1.142 4.14-.001l5.52-5.52 3.16 3.16c1.101 1.1 1.507 1.129 1.507-.757L26 3.419c-.001-3.437.024-3.42-3.419-3.419z" />
+                  </svg>
+                </td>
+              </tr>
+            `
+                : ""
+            }
+            </tbody>
+          </table>
+        </div>
+        ${
+          entry.thumbnailUrl
+            ? `
+          <img property="thumbnail" class="c-entry__image" src="${entry.thumbnailUrl}" alt="Front cover of ${entry.name}" />
         `
-              : ""
-          }
-          ${
-            entry.citation
-              ? `
-            <tr>
-              <th>Related texts</th>
-              <td>
-                ${entry.citation
-                  .map((x, i) => {
-                    const related = DB.data[x.identifier];
-                    return (
-                      (i !== 0 ? "<br>" : "") +
-                      `
-                    <a href="/novel/${related.identifier}" property="citation">
-                      ${related.name}
-                    </a>
-                  `
-                    );
-                  })
-                  .join("")}
-              </td>
-            </tr>
-          `
-              : ""
-          }
-          ${
-            entry.url
-              ? `
-            <tr>
-              <th>Link</th>
-              <td>
-                <a href="${entry.url}" property="url">
-                  ${entry.url}
-                </a>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" class="o-svg-icon" title="External link">
-                  <path d="M18 17.759v3.366C18 22.159 17.159 23 16.125 23H4.875C3.841 23 3 22.159 3 21.125V9.875C3 8.841 3.841 8 4.875 8h3.429l3.001-3h-6.43C2.182 5 0 7.182 0 9.875v11.25C0 23.818 2.182 26 4.875 26h11.25C18.818 26 21 23.818 21 21.125v-6.367l-3 3.001z" />
-                  <path d="M22.581 0H12.322c-1.886.002-1.755.51-.76 1.504l3.22 3.22-5.52 5.519c-1.145 1.144-1.144 2.998 0 4.141l2.41 2.411c1.144 1.141 2.996 1.142 4.14-.001l5.52-5.52 3.16 3.16c1.101 1.1 1.507 1.129 1.507-.757L26 3.419c-.001-3.437.024-3.42-3.419-3.419z" />
-                </svg>
-              </td>
-            </tr>
-          `
-              : ""
-          }
-          </tbody>
-        </table>
+            : ""
+        }
       </div>
     `;
   })
@@ -384,7 +397,47 @@ const router = new Router()
       </ol>
     `;
   })
-  .add(/^\/?$/, () => renderTextList("All entries"))
+  .add(/^all\/?$/, () => renderTextList("All entries"))
+  .add(/^\/?$/, () => {
+    const sortedGenres = Object.values(DB.data)
+      .filter(
+        (entry) =>
+          entry["@type"] === "DefinedTerm" &&
+          entry.inDefinedTermSet &&
+          entry.inDefinedTermSet.identifier === "genre"
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return `
+      <!--<p>About content here</p>-->
+
+      <div class="c-tile__grid-container">
+        ${sortedGenres
+          .map(
+            (genre) => `
+              <div class="c-tile"
+                ${
+                  genre.image
+                    ? `
+                      style="background-image: url('${genre.image}')"
+                    `
+                    : ""
+                }
+              >
+                <div class="c-tile__contents">
+                  <a class="c-tile__cover-link" href="/genre/${
+                    genre.identifier
+                  }">
+                    <strong>${genre.name}</strong>
+                  </a>
+                </div>
+              </div>
+            `
+          )
+          .join("")}
+      </div>
+    `;
+  })
   .add(
     /.+/,
     () => `
@@ -407,15 +460,6 @@ function render() {
 }
 
 function renderSubnav() {
-  const sortedGenres = Object.values(DB.data)
-    .filter(
-      (entry) =>
-        entry["@type"] === "DefinedTerm" &&
-        entry.inDefinedTermSet &&
-        entry.inDefinedTermSet.identifier === "genre"
-    )
-    .sort((a, b) => a.name.localeCompare(b.name));
-
   const sortedYears = Object.values(DB.data)
     .filter(isCreativeWork)
     .map((x) => (x.datePublished ? x.datePublished.substr(0, 4) : null))
@@ -423,28 +467,14 @@ function renderSubnav() {
     .filter((x, i, arr) => arr.indexOf(x) === i)
     .sort();
 
-  $subnav.innerHTML = `
-    <h3>Genre</h3>
-    <ul>
-      ${sortedGenres
-        .map(
-          (genre) => `
-        <li><a href="/genre/${genre.identifier}" class="u-break-words">${genre.name}</a></li>
-      `
-        )
-        .join("")}
-    </ul>
-
-    <h3>Publication year</h3>
-    <ol class="c-subnav__grid-list">
+  document.querySelector("#subnav-by-year").innerHTML = `
     ${sortedYears
       .map(
         (year) => `
-      <li><a href="/year/${year}">${year}</a></li>
-    `
+          <li><a href="/year/${year}">${year}</a></li>
+        `
       )
       .join("")}
-    </ol>
   `;
 }
 
@@ -463,8 +493,94 @@ document
 
 const $tray = document.querySelector(".c-subnav");
 Array.from(document.querySelectorAll(".c-subnav-toggle")).forEach(($el) => {
-  $el.addEventListener("click", () => {
-    $tray.classList.toggle("c-subnav--show");
-    document.body.classList.toggle("u-scroll-lock");
+  $el.addEventListener("click", (e) => {
+    if ($tray?.classList.contains("c-subnav--show")) {
+      $tray.classList.remove("c-subnav--show");
+    } else {
+      $tray.classList.add("c-subnav--show");
+      $tray.style.top = `${$el.getBoundingClientRect().bottom}px`;
+    }
   });
 });
+
+const $searchTray = document.querySelector(".c-search__results");
+document.querySelector(".c-search__input").addEventListener("input", (e) => {
+  const searchString = (e.target.value ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+  if (searchString.length < 3) {
+    $searchTray?.classList.remove("c-search__results--show");
+    return;
+  }
+
+  const entries = Object.values(DB.data)
+    .filter(isCreativeWork)
+    .filter((work) => {
+      const workSerialised = [
+        work.author
+          ? work.author.map((a) => DB.data[a.identifier].name).join("")
+          : "",
+        work.name,
+      ]
+        .join("")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+
+      return workSerialised.includes(searchString);
+    });
+
+  $searchTray?.classList.add("c-search__results--show");
+  $searchTray.innerHTML = entries
+    .slice(0, 8)
+    .map(
+      (work) => `
+        <li>
+          <a class="c-search__result" href="/novel/${work.identifier}">
+            <strong>${work.name}</strong>
+            ${
+              work.author
+                ? "<br>" +
+                  work.author.map((a) => DB.data[a.identifier].name).join(", ")
+                : ""
+            }
+          </a>
+        </li>
+      `
+    )
+    .join("");
+});
+
+const clickaways = [
+  {
+    target: ".c-subnav",
+    effect: "c-subnav--show",
+    parents: [".c-subnav-toggle", ".c-subnav"],
+  },
+  {
+    target: ".c-search__results",
+    effect: "c-search__results--show",
+    parents: [".c-search"],
+  },
+];
+
+document.addEventListener("click", (e) => {
+  clickaways.forEach(({ target, effect, parents }) => {
+    if (!parents.some((p) => document.querySelector(p).contains(e.target))) {
+      document.querySelector(target)?.classList.remove(effect);
+    }
+  });
+});
+
+document.addEventListener(
+  "focus",
+  (e) => {
+    console.log(e.target);
+    clickaways.forEach(({ target, effect, parents }) => {
+      if (!parents.some((p) => document.querySelector(p).contains(e.target))) {
+        document.querySelector(target)?.classList.remove(effect);
+      }
+    });
+  },
+  true
+);
