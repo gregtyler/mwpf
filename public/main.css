@@ -47,7 +47,7 @@ body {
     padding: 1rem;
     background-color: white;
     transform: translateX(-100%);
-    transition: transform .5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition: transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
     z-index: 10;
     overflow: auto;
   }
@@ -71,7 +71,7 @@ a:hover {
 
 .c-header__title {
   margin: 0;
-  font-family: 'Bodoni Moda', serif;
+  font-family: "Bodoni Moda", serif;
   line-height: 1.2em;
   font-weight: normal;
   text-transform: uppercase;
@@ -107,7 +107,7 @@ a:hover {
 
 .c-subnav-toggle {
   margin-left: 1rem;
-  padding: .25rem;
+  padding: 0.25rem;
   border: 1px solid currentColor;
   background: none;
   font-family: inherit;
@@ -122,7 +122,7 @@ a:hover {
   margin: 0;
   padding: 0;
   grid-template-columns: repeat(auto-fill, minmax(4ch, 1fr));
-  grid-gap: .5rem;
+  grid-gap: 0.5rem;
 }
 
 .c-page {
@@ -133,6 +133,11 @@ a:hover {
   margin: 0 0 1rem;
   font-size: 3rem;
   font-weight: normal;
+}
+
+.c-page__subtitle {
+  display: block;
+  font-size: 1.5rem;
 }
 
 .c-page__clamp {
@@ -164,7 +169,7 @@ a:hover {
 }
 
 .c-tile__cover-link::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
@@ -179,7 +184,7 @@ a:hover {
 .c-tag {
   position: relative;
   display: inline-block;
-  padding: .3rem;
+  padding: 0.3rem;
   background-color: hsl(213, 92%, 90%);
   color: inherit;
   font-size: 0.8rem;
@@ -188,7 +193,7 @@ a:hover {
 }
 
 .c-tag::before {
-  content: '#';
+  content: "#";
   opacity: 0.4;
 }
 
@@ -209,14 +214,15 @@ a:hover {
   width: 25%;
 }
 
-.c-data-table th, .c-data-table td {
-  padding: .5rem;
+.c-data-table th,
+.c-data-table td {
+  padding: 0.5rem;
   text-align: left;
   vertical-align: top;
 }
 
 .o-svg-icon {
-  height: .9em;
+  height: 0.9em;
   fill: currentcolor;
 }
 
@@ -229,31 +235,31 @@ a:hover {
 }
 
 @font-face {
-  font-family: 'Lato';
+  font-family: "Lato";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('./fonts/Lato-Italic.ttf') format('truetype');
+  src: url("./fonts/Lato-Italic.ttf") format("truetype");
 }
 @font-face {
-  font-family: 'Lato';
+  font-family: "Lato";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('./fonts/Lato-Regular.ttf') format('truetype');
+  src: url("./fonts/Lato-Regular.ttf") format("truetype");
 }
 @font-face {
-  font-family: 'Lato';
+  font-family: "Lato";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('./fonts/Lato-Bold.ttf') format('truetype');
+  src: url("./fonts/Lato-Bold.ttf") format("truetype");
 }
 
 @font-face {
-  font-family: 'Bodoni Moda';
+  font-family: "Bodoni Moda";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('./fonts/BodoniModa-Regular.ttf') format('truetype');
+  src: url("./fonts/BodoniModa-Regular.ttf") format("truetype");
 }

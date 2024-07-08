@@ -136,6 +136,7 @@ const router = new Router()
       }" typeof="${entry["@type"]}">
         <h2 class="c-page__title" property="name" id="skip-to-content-link-target" tabindex="-1">
           ${entry.name}
+          <small class="c-page__subtitle">by ${entry.author.map((a) => DB.data[a.identifier].name).join(", ")}</small>
         </h2>
         <div style="margin-bottom:1rem;">
           ${renderTagList(entry.keywords)}
@@ -398,6 +399,11 @@ function render() {
   const path = window.location.pathname.substr(1);
 
   $root.innerHTML = router.parse(path);
+  const $h2 = $root?.querySelector("h2");
+  if ($h2) {
+    document.title =
+      $h2.innerText.trim() + " - Muslim Women's Popular Fiction database";
+  }
 }
 
 function renderSubnav() {
