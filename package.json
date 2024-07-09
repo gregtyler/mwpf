@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "npx serve --single ./public",
     "build": "node download.js ./public/data.json"
   },
   "license": "MIT",

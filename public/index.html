@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Muslim Women's Popular Fiction database</title>
-    <link rel="stylesheet" href="/main.css">
-    <link rel="preload" href="/fonts/Lato-Bold.ttf" as="font">
-    <link rel="preload" href="/fonts/Lato-Regular.ttf" as="font">
+    <link rel="stylesheet" href="/main.css" />
+    <link rel="preload" href="/fonts/Lato-Bold.ttf" as="font" />
+    <link rel="preload" href="/fonts/Lato-Regular.ttf" as="font" />
 
     <script src="/src/db.js" defer></script>
     <script src="/src/router.js" defer></script>
@@ -28,60 +28,132 @@
           Muslim Women's Popular Fiction database
         </a>
       </h1>
-      <button type="button" class="c-subnav-toggle">Menu</button>
-      <div class="c-subnav">
-        <h2 class="c-subnav__header">
-          Find texts
-          <button type="button" class="c-subnav-toggle">Close</button>
-        </h2>
 
-        <h3>Lists</h3>
-        <a href="/creator">All creators</a><br>
-        <a href="/publisher">All publishers</a>
+      <div class="c-header__fill"></div>
 
-        <div id="subnav"></div>
-      </div>
+      <nav class="c-header__nav">
+        <div>
+          <button type="button" class="c-subnav-toggle">Browse&nbsp;⌄</button>
+
+          <div class="c-subnav">
+            <div class="c-subnav__col">
+              <h3 class="c-subnav__heading">Lists</h3>
+              <ul class="c-subnav__list">
+                <li><a href="/all">All works</a></li>
+                <li><a href="/creator">All creators</a></li>
+                <li><a href="/publisher">All publishers</a></li>
+              </ul>
+            </div>
+
+            <div class="c-subnav__col">
+              <h3 class="c-subnav__heading">Publication year</h3>
+              <ol class="c-subnav__grid-list" id="subnav-by-year"></ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-header__search c-search">
+          <input type="text" class="c-search__input" />
+
+          <ol class="c-search__results"></ol>
+        </div>
+      </nav>
     </header>
     <main class="c-page" id="root">
       <noscript>
         <h2>JavaScript required to continue</h2>
         <p>This website currently requires JavaScript to display content.</p>
-        <p>If you need access to the database, please contact <a href="https://www.birmingham.ac.uk/staff/profiles/english/burge-amy.aspx">Dr Amy Burge</a> to see if an alternative access method can be used.</p>
+        <p>
+          If you need access to the database, please contact
+          <a
+            href="https://www.birmingham.ac.uk/staff/profiles/english/burge-amy.aspx"
+            >Dr Amy Burge</a
+          >
+          to see if an alternative access method can be used.
+        </p>
       </noscript>
     </main>
     <div id="page-about" hidden>
       <h2 class="c-page__title">About this database</h2>
       <div class="c-page__clamp">
-        <p>This database is maintained by <a href="https://www.birmingham.ac.uk/staff/profiles/english/burge-amy.aspx">Dr Amy Burge</a> from the University of Birmingham.</p>
+        <p>
+          This database is maintained by
+          <a
+            href="https://www.birmingham.ac.uk/staff/profiles/english/burge-amy.aspx"
+            >Dr Amy Burge</a
+          >
+          from the University of Birmingham.
+        </p>
 
         <h3>Privacy notice</h3>
-        <p>We do not collect any personal data on this site. However, we do monitor traffic to individual pages to provide us with general analytics data. It is an extremely common practice, and not used to monitor individual users.</p>
-        <p>If you do not wish us to track your visits to this site, you can turn on <a href="https://www.eff.org/issues/do-not-track">Do Not Track</a> in your browser. This will tell websites not to track you in analytics, and we will strictly honour it.</p>
+        <p>
+          We do not collect any personal data on this site. However, we do
+          monitor traffic to individual pages to provide us with general
+          analytics data. It is an extremely common practice, and not used to
+          monitor individual users.
+        </p>
+        <p>
+          If you do not wish us to track your visits to this site, you can turn
+          on
+          <a href="https://www.eff.org/issues/do-not-track">Do Not Track</a> in
+          your browser. This will tell websites not to track you in analytics,
+          and we will strictly honour it.
+        </p>
         <h4>Access to personal data and the right to be forgotten</h4>
-        <p>As we do not store any personal data, there is nothing for you to request access to or to be removed.</p>
+        <p>
+          As we do not store any personal data, there is nothing for you to
+          request access to or to be removed.
+        </p>
         <h4>Contributing</h4>
-        <p>If you choose to contribute, you will use Google Forms and will therefore be subject to <a href="https://policies.google.com/privacy">their privacy policy</a>.</p>
+        <p>
+          If you choose to contribute, you will use Google Forms and will
+          therefore be subject to
+          <a href="https://policies.google.com/privacy">their privacy policy</a
+          >.
+        </p>
         <h4>Updates to this privacy notice</h4>
         <p>This notice was last updated on 25th January 2023.</p>
         <h4>Contact information</h4>
-        <p>If you have any questions about the privacy notice, please contact <a href="https://www.birmingham.ac.uk/staff/profiles/english/burge-amy.aspx">Dr Amy Burge</a>.</p>
+        <p>
+          If you have any questions about the privacy notice, please contact
+          <a
+            href="https://www.birmingham.ac.uk/staff/profiles/english/burge-amy.aspx"
+            >Dr Amy Burge</a
+          >.
+        </p>
       </div>
     </div>
     <div id="page-contribute" hidden>
       <h2 class="c-page__title">Contribute to the database</h2>
-      <p>To contribute to the Muslim Women's Popular Fiction database, fill out the form below. Your submission will be reviewed before appearing in the database.</p>
-      <iframe id="contribute-iframe" src="" width="640" height="3380" frameborder="0" marginheight="0" marginwidth="0">
+      <p>
+        To contribute to the Muslim Women's Popular Fiction database, fill out
+        the form below. Your submission will be reviewed before appearing in the
+        database.
+      </p>
+      <iframe
+        id="contribute-iframe"
+        src=""
+        width="640"
+        height="3380"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0"
+      >
         Loading contribution form…
       </iframe>
     </div>
     <footer class="c-footer">
       <a class="c-footer__link" href="/about">About</a>
-      <br>
+      |
       <a class="c-footer__link" href="/contribute">Contribute</a>
-      <br>
+      |
       <a class="c-footer__link" data-js="force-refresh" href="">Refresh data</a>
     </footer>
 
-    <script data-goatcounter="https://mwpfdb.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <script
+      data-goatcounter="https://mwpfdb.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
   </body>
 </html>
