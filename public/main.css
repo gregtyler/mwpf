@@ -9,23 +9,30 @@ body {
   font-size: 18px;
 
   background-color: #fdfdff;
-  color: #335;
+  color: #47464f;
 }
 
 a {
-  color: hsl(213, 72%, 15%);
+  color: #585992;
 }
 
 a:hover {
-  text-decoration: none;
+  text-decoration-thickness: 3px;
 }
 
 .c-header {
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 0;
   gap: 1rem;
   padding: 1rem;
   box-shadow: 0 0 10px hsla(0, 0%, 0%, 0.2);
+
+  background-color: #585992;
+  color: #fff;
+
+  z-index: 4;
 }
 
 @media (max-width: 800px) {
@@ -35,9 +42,16 @@ a:hover {
   }
 }
 
+@media (max-width: 500px) {
+  .c-header__nav {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 .c-header__title {
   margin: 0;
-  font-family: "Bodoni Moda", serif;
+  font-family: "Baskervville SC", serif;
   line-height: 1.2em;
   font-weight: normal;
 }
@@ -52,8 +66,13 @@ a:hover {
   flex-grow: 1;
 }
 
-.c-search {
+.c-header__nav {
+  display: flex;
+  gap: 1rem;
   position: relative;
+}
+
+.c-search {
   min-width: 300px;
   max-width: 400px;
 }
@@ -63,7 +82,7 @@ a:hover {
   padding: 0.25rem 0.5rem;
   font-family: inherit;
   font-size: inherit;
-  color: inherit;
+  color: #585992;
 }
 
 .c-search__results {
@@ -89,10 +108,12 @@ a:hover {
   display: block;
   padding: 1rem;
   text-decoration: none;
+  color: #47464f;
 }
 
 .c-search__result:hover {
-  background-color: #def;
+  background-color: #585992;
+  color: #ffffff;
 }
 
 .c-header__skip-links {
@@ -118,11 +139,11 @@ a:hover {
   max-width: 100%;
   padding: 1rem;
   gap: 1rem;
-  position: fixed;
-  top: 40px;
-  left: 50%;
-  margin-left: -25%;
+  position: absolute;
+  top: 100%;
+  left: 0;
   background-color: white;
+  color: #585992;
   box-shadow: 0 0 10px hsla(0, 0%, 0%, 0.2);
   z-index: 10000;
 }
@@ -167,7 +188,6 @@ a:hover {
 }
 
 .c-subnav-toggle {
-  margin-left: 1rem;
   padding: 0.25rem 0.5rem;
   border: 1px solid currentColor;
   border-radius: 5px;
@@ -180,8 +200,8 @@ a:hover {
 }
 
 .c-subnav-toggle:hover {
-  background-color: hsla(240, 20%, 50%, 0.8);
-  color: #fff;
+  color: #585992;
+  background-color: #fff;
 }
 
 .c-page {
@@ -195,12 +215,14 @@ a:hover {
 .c-page__title {
   margin: 0 0 1rem;
   font-size: 3rem;
-  font-weight: normal;
+  font-weight: bold;
 }
 
 .c-page__subtitle {
   display: block;
   font-size: 1.5rem;
+  color: #74777f;
+  font-weight: normal;
 }
 
 .c-page__clamp {
@@ -212,7 +234,7 @@ a:hover {
 }
 
 .c-footer__link {
-  color: hsl(0, 90%, 35%);
+  color: #795369;
 }
 
 .c-tile__grid-container {
@@ -224,6 +246,7 @@ a:hover {
 
 .c-tile {
   position: relative;
+  max-width: 500px;
   display: flex;
   align-items: end;
   flex-direction: row;
@@ -231,7 +254,7 @@ a:hover {
   background-size: cover;
   background-repeat: no-repeat;
   background-position-x: center;
-  background-color: #dde;
+  background-color: #e2e0f9;
 }
 
 .c-tile__contents {
@@ -256,7 +279,7 @@ a:hover {
 }
 
 .c-tile:hover .c-tile__contents {
-  background-color: hsla(240, 20%, 50%, 0.8);
+  background-color: #585992;
   color: #fff;
 }
 
@@ -264,9 +287,9 @@ a:hover {
   position: relative;
   display: inline-block;
   padding: 0.3rem;
-  background-color: hsl(213, 92%, 90%);
-  color: inherit;
-  font-size: 0.8rem;
+  background-color: #e2e0f9;
+  color: #1a1a2c;
+  font-size: 0.85rem;
   text-decoration: none;
   z-index: 2;
 }
@@ -277,7 +300,8 @@ a:hover {
 }
 
 .c-tag:hover {
-  background-color: hsl(213, 92%, 95%);
+  background-color: #5d5c72;
+  color: #ffffff;
 }
 
 .c-data-table {
@@ -295,7 +319,7 @@ a:hover {
 
 .c-data-table th,
 .c-data-table td {
-  padding: 0.5rem;
+  padding: 0.75rem 0rem;
   text-align: left;
   vertical-align: top;
 }
@@ -367,4 +391,12 @@ a:hover {
   font-weight: 400;
   font-display: swap;
   src: url("./fonts/BodoniModa-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Baskervville SC";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/BaskervvilleSC-Regular.ttf") format("truetype");
 }

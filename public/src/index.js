@@ -149,9 +149,13 @@ const router = new Router()
         <div class="c-entry__fill">
           <h2 class="c-page__title" property="name" id="skip-to-content-link-target" tabindex="-1">
             ${entry.name}
-            <small class="c-page__subtitle">by ${entry.author
-              .map((a) => DB.data[a.identifier].name)
-              .join(", ")}</small>
+            ${
+              entry.author
+                ? `<small class="c-page__subtitle">by ${entry.author
+                    .map((a) => DB.data[a.identifier].name)
+                    .join(", ")}</small>`
+                : ""
+            }
           </h2>
           <div style="margin-bottom:1rem;">
             ${renderTagList(entry.keywords)}
@@ -498,7 +502,7 @@ Array.from(document.querySelectorAll(".c-subnav-toggle")).forEach(($el) => {
       $tray.classList.remove("c-subnav--show");
     } else {
       $tray.classList.add("c-subnav--show");
-      $tray.style.top = `${$el.getBoundingClientRect().bottom}px`;
+      // $tray.style.top = `${$el.getBoundingClientRect().bottom}px`;
     }
   });
 });

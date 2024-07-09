@@ -28,32 +28,36 @@
           Muslim Women's Popular Fiction database
         </a>
       </h1>
-      <button type="button" class="c-subnav-toggle">Browse&nbsp;⌄</button>
-      <div class="c-subnav">
-        <div class="c-subnav__col">
-          <h3 class="c-subnav__heading">Lists</h3>
-          <ul class="c-subnav__list">
-            <li><a href="/all">All works</a></li>
-            <li><a href="/creator">All creators</a></li>
-            <li><a href="/publisher">All publishers</a></li>
-          </ul>
-        </div>
-
-        <div class="c-subnav__col">
-          <h3 class="c-subnav__heading">Publication year</h3>
-          <ol class="c-subnav__grid-list" id="subnav-by-year"></ol>
-        </div>
-      </div>
 
       <div class="c-header__fill"></div>
 
-      <div class="c-header__search c-search">
-        <input type="text" class="c-search__input" />
+      <nav class="c-header__nav">
+        <div>
+          <button type="button" class="c-subnav-toggle">Browse&nbsp;⌄</button>
 
-        <ol class="c-search__results">
-          Hi!
-        </ol>
-      </div>
+          <div class="c-subnav">
+            <div class="c-subnav__col">
+              <h3 class="c-subnav__heading">Lists</h3>
+              <ul class="c-subnav__list">
+                <li><a href="/all">All works</a></li>
+                <li><a href="/creator">All creators</a></li>
+                <li><a href="/publisher">All publishers</a></li>
+              </ul>
+            </div>
+
+            <div class="c-subnav__col">
+              <h3 class="c-subnav__heading">Publication year</h3>
+              <ol class="c-subnav__grid-list" id="subnav-by-year"></ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-header__search c-search">
+          <input type="text" class="c-search__input" />
+
+          <ol class="c-search__results"></ol>
+        </div>
+      </nav>
     </header>
     <main class="c-page" id="root">
       <noscript>
@@ -140,9 +144,9 @@
     </div>
     <footer class="c-footer">
       <a class="c-footer__link" href="/about">About</a>
-      <br />
+      |
       <a class="c-footer__link" href="/contribute">Contribute</a>
-      <br />
+      |
       <a class="c-footer__link" data-js="force-refresh" href="">Refresh data</a>
     </footer>
 
