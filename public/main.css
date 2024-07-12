@@ -23,7 +23,6 @@ a:hover {
 .c-header {
   display: flex;
   align-items: center;
-  position: sticky;
   top: 0;
   gap: 1rem;
   padding: 1rem;
@@ -33,6 +32,12 @@ a:hover {
   color: #fff;
 
   z-index: 4;
+}
+
+@media (min-width: 801px) {
+  .c-header {
+    position: sticky;
+  }
 }
 
 @media (max-width: 800px) {
@@ -56,9 +61,29 @@ a:hover {
   font-weight: normal;
 }
 
+@media (max-width: 800px) {
+  .c-header__title {
+    text-align: center;
+  }
+}
+
+.c-header__title-acronym {
+  white-space: nowrap;
+}
+
+.c-header__title-full {
+  font-size: 0.9rem;
+  line-height: 1.2em;
+  white-space: nowrap;
+}
+
 .c-header__link {
   color: inherit;
   text-decoration: none;
+}
+
+.c-header__link:hover {
+  text-decoration: underline;
 }
 
 .c-header__search,
