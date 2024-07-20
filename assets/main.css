@@ -12,6 +12,14 @@ body {
   color: #47464f;
 }
 
+.u-js-only {
+  display: none !important;
+}
+
+body.u-js-enabled .u-js-only {
+  display: initial !important;
+}
+
 a {
   color: #585992;
 }
@@ -136,7 +144,7 @@ a:hover {
   color: #47464f;
 }
 
-.c-search__result:hover {
+.c-search__result:link:hover {
   background-color: #585992;
   color: #ffffff;
 }
@@ -221,7 +229,9 @@ a:hover {
   font-size: 1.2rem;
   color: inherit;
   cursor: pointer;
-  transition: background-color 0.2s ease-in, color 0.2s ease-in;
+  transition:
+    background-color 0.2s ease-in,
+    color 0.2s ease-in;
 }
 
 .c-subnav-toggle:hover {
@@ -286,7 +296,9 @@ a:hover {
   width: 100%;
   padding: 1rem;
   background-color: hsla(0, 0%, 100%, 0.8);
-  transition: background-color 0.2s ease-in, color 0.2s ease-in;
+  transition:
+    background-color 0.2s ease-in,
+    color 0.2s ease-in;
 }
 
 .c-tile__cover-link {

@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "npx serve --single ./public",
-    "build": "node download.js ./public/data.json"
+    "start": "nodemon -e mjs,njk,css,js -i public ./src/build.mjs",
+    "download": "node ./src/download.js ./data.json",
+    "build": "npm run download && node ./src/build.mjs"
   },
   "license": "MIT",
   "dependencies": {
-    "contentful": "^10.6.7"
+    "contentful": "^10.6.7",
+    "nunjucks": "^3.2.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "prettier-plugin-jinja-template": "^1.4.1"
   }
 }

@@ -20,9 +20,24 @@ async function main() {
     limit: 1000,
   });
 
-  console.log(`Downloading ${allEntries.items.length} items...`);
+  let allItems = allEntries.items;
 
-  const items = allEntries.items
+  console.log(`Downloaded items 0–${allEntries.items.length}`);
+
+  if (allEntries.total > 1000) {
+    for (let skip = 1000; skip < allEntries.total; skip += 1000) {
+      const entries = await client.getEntries({
+        limit: 1000,
+        skip,
+      });
+
+      console.log(`Downloaded items ${skip}–${entries.total - skip}`);
+
+      allItems = [...allItems, ...entries.items];
+    }
+  }
+
+  const items = allItems
     .map(({ sys, fields }) => {
       const contentType = sys.contentType.sys.id;
 
@@ -44,7 +59,7 @@ async function main() {
           datePublished: fields.year ? `${fields.year}-01-01` : null,
           keywords: fields.tags
             ? fields.tags.map(
-                (t) => new Thing("DefinedTerm", { identifier: t.sys.id })
+                (t) => new Thing("DefinedTerm", { identifier: t.sys.id }),
               )
             : null,
           comment: fields.notes
