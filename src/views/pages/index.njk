@@ -1,0 +1,20 @@
+{% extends "layouts/main.njk" %}
+
+{% block content %}
+  <div class="c-tile__grid-container">
+    {% for genre in genres %}
+      <div
+        class="c-tile"
+        {% if genre.image %}
+          style="background-image: url('{{ genre.image }}')"
+        {% endif %}
+      >
+        <div class="c-tile__contents">
+          <a class="c-tile__cover-link" href="/genre/{{ genre.identifier }}">
+            <strong>{{ genre.name }}</strong>
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

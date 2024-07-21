@@ -1,3 +1,4 @@
 .env
-public/data.json
 node_modules
+data.json
+public

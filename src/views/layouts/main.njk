@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>
+      {% block title %}Muslim Women's Popular Fiction database{% endblock %}
+    </title>
+    <link rel="stylesheet" href="/main.css" />
+    <link rel="preload" href="/fonts/Lato-Bold.ttf" as="font" />
+    <link rel="preload" href="/fonts/Lato-Regular.ttf" as="font" />
+  </head>
+  <body>
+    <header class="c-header">
+      <div class="c-header__skip-links">
+        <h2>Accessibility links</h2>
+        <ul>
+          <li>
+            <a href="#skip-to-content-link-target">Skip to content</a>
+          </li>
+        </ul>
+      </div>
+      <h1 class="c-header__title">
+        <div class="c-header__title-acronym" role="presentation">
+          <a href="/" class="c-header__link">MWPF db</a>
+        </div>
+        <div class="c-header__title-full">
+          <a href="/" class="c-header__link"
+            >Muslim Women's Popular Fiction database</a
+          >
+        </div>
+      </h1>
+
+      <div class="c-header__fill"></div>
+
+      <div class="u-js-only">
+        <nav class="c-header__nav">
+          <div>
+            <button type="button" class="c-subnav-toggle">Browse&nbsp;⌄</button>
+
+            <div class="c-subnav">
+              <div class="c-subnav__col">
+                <h3 class="c-subnav__heading">Lists</h3>
+                <ul class="c-subnav__list">
+                  <li><a href="/all">All works</a></li>
+                  <li><a href="/creator">All creators</a></li>
+                  <li><a href="/publisher">All publishers</a></li>
+                </ul>
+              </div>
+
+              <div class="c-subnav__col">
+                <h3 class="c-subnav__heading">Publication year</h3>
+                <ol class="c-subnav__grid-list" id="subnav-by-year"></ol>
+              </div>
+            </div>
+          </div>
+
+          <div class="c-header__search c-search">
+            <input
+              type="text"
+              class="c-search__input"
+              aria-label="Search texts"
+            />
+
+            <ol class="c-search__results"></ol>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <main class="c-page" id="root">{% block content %}{% endblock %}</main>
+    <footer class="c-footer">
+      <a class="c-footer__link" href="/about">About</a>
+      |
+      <a class="c-footer__link" href="/contribute">Contribute</a>
+    </footer>
+
+    <script
+      data-goatcounter="https://mwpfdb.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+    <script src="/main.js" defer></script>
+  </body>
+</html>
