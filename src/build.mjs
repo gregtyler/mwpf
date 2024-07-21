@@ -3,23 +3,23 @@ import nunjucks from "nunjucks";
 import { fileURLToPath } from "url";
 import { dirname, resolve as pathResolve } from "path";
 import { copy } from "./lib/fs.mjs";
+import { DB } from "./lib/queries.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const baseDir = pathResolve(__dirname, "../public");
-
-const data = JSON.parse(
-  await fs.readFile(pathResolve(__dirname, "../data.json"), "utf-8"),
-);
 
 const nunjucksEnv = nunjucks.configure(pathResolve(__dirname, "views"), {
   autoescape: true,
 });
 
-nunjucksEnv.addFilter("lookup", (id) => data.find((x) => x.identifier === id));
-nunjucksEnv.addGlobal("data", data);
+const db = new DB();
+await db.init(pathResolve(__dirname, "../data.json"));
 
-const isCreativeWork = (x) =>
-  ["CreativeWork", "Book", "Movie"].includes(x["@type"]);
+nunjucksEnv.addFilter("lookup", (id) =>
+  db.data.find((x) => x.identifier === id),
+);
+nunjucksEnv.addGlobal("data", db.data);
+
 const isByCreator = (identifier) => (work) =>
   (work.author && work.author.find((y) => y.identifier === identifier)) ||
   (work.director && work.director.find((y) => y.identifier === identifier)) ||
@@ -35,19 +35,12 @@ const pages = [
     url: "",
     template: "pages/index.njk",
     data: {
-      genres: data
-        .filter(
-          (entry) =>
-            entry["@type"] === "DefinedTerm" &&
-            entry.inDefinedTermSet &&
-            entry.inDefinedTermSet.identifier === "genre",
-        )
-        .sort((a, b) => a.name.localeCompare(b.name)),
+      genres: db.genres.sort((a, b) => a.name.localeCompare(b.name)),
     },
   },
   // MARK: Abstract
   // Novels
-  ...data.filter(isCreativeWork).map((x) => ({
+  ...db.works.map((x) => ({
     url: `novel/${x.identifier}`,
     template: "pages/novel.njk",
     data: { novel: x },
@@ -59,13 +52,12 @@ const pages = [
     template: "pages/list.njk",
     data: {
       title: "All creators",
-      list: data
-        .filter((x) => ["Person"].includes(x["@type"]))
+      list: db.creators
         .sort((a, b) => a.name.trim().localeCompare(b.name.trim()))
         .map((creator) => {
-          const workCount = data
-            .filter(isCreativeWork)
-            .filter(isByCreator(creator.identifier)).length;
+          const workCount = db.works.filter(
+            isByCreator(creator.identifier),
+          ).length;
 
           return {
             url: `/creator/${creator.identifier}`,
@@ -81,15 +73,12 @@ const pages = [
     template: "pages/list.njk",
     data: {
       title: "All publishers",
-      list: data
-        .filter((x) => ["Organization"].includes(x["@type"]))
+      list: db.publishers
         .sort((a, b) => a.name.trim().localeCompare(b.name.trim()))
         .map((publisher) => {
-          const workCount = data
-            .filter(isCreativeWork)
-            .filter((x) =>
-              x.publisher?.find((p) => p.identifier === publisher.identifier),
-            ).length;
+          const workCount = db.works.filter((x) =>
+            x.publisher?.find((p) => p.identifier === publisher.identifier),
+          ).length;
 
           return {
             url: `/publisher/${publisher.identifier}`,
@@ -101,74 +90,59 @@ const pages = [
   },
   // MARK: Collections
   // Creators
-  ...data
-    .filter((x) => ["Person"].includes(x["@type"]))
-    .map((creator) => {
-      const entries = data.filter(isByCreator(creator.identifier));
+  ...db.creators.map((creator) => {
+    const entries = db.works.filter(isByCreator(creator.identifier));
 
-      return {
-        url: `creator/${creator.identifier}`,
-        template: "pages/collection.njk",
-        data: {
-          title: `Texts by <strong>${creator.name}</strong>`,
-          entries,
-        },
-      };
-    }),
+    return {
+      url: `creator/${creator.identifier}`,
+      template: "pages/collection.njk",
+      data: {
+        title: `Texts by <strong>${creator.name}</strong>`,
+        entries,
+      },
+    };
+  }),
   // Publishers
-  ...data
-    .filter((x) => ["Organization"].includes(x["@type"]))
-    .map((publisher) => {
-      const entries = data.filter(
-        (work) =>
-          work.publisher &&
-          work.publisher.find((p) => p.identifier === publisher.identifier),
-      );
+  ...db.publishers.map((publisher) => {
+    const entries = db.works.filter(
+      (work) =>
+        work.publisher &&
+        work.publisher.find((p) => p.identifier === publisher.identifier),
+    );
 
-      return {
-        url: `publisher/${publisher.identifier}`,
-        template: "pages/collection.njk",
-        data: {
-          title: `Texts published by <strong>${publisher.name}</strong>`,
-          entries,
-        },
-      };
-    }),
+    return {
+      url: `publisher/${publisher.identifier}`,
+      template: "pages/collection.njk",
+      data: {
+        title: `Texts published by <strong>${publisher.name}</strong>`,
+        entries,
+      },
+    };
+  }),
   // Genres
-  ...data
-    .filter(
-      (entry) =>
-        entry["@type"] === "DefinedTerm" &&
-        entry.inDefinedTermSet &&
-        entry.inDefinedTermSet.identifier === "genre",
-    )
-    .map((genre) => {
-      const entries = data.filter(
-        (work) => work.genre && work.genre.includes(genre.name),
-      );
+  ...db.genres.map((genre) => {
+    const entries = db.works.filter(
+      (work) => work.genre && work.genre.includes(genre.name),
+    );
 
-      return {
-        url: `genre/${genre.identifier}`,
-        template: "pages/collection.njk",
-        data: {
-          title: `<strong>${genre.name}</strong> texts`,
-          entries,
-        },
-      };
-    }),
+    return {
+      url: `genre/${genre.identifier}`,
+      template: "pages/collection.njk",
+      data: {
+        title: `<strong>${genre.name}</strong> texts`,
+        entries,
+      },
+    };
+  }),
   // Years
-  ...data
-    .filter(
-      (x) =>
-        ["CreativeWork", "Book", "Movie"].includes(x["@type"]) &&
-        x.datePublished,
-    )
+  ...db.works
+    .filter((x) => x.datePublished)
     .map((x) => x.datePublished.substr(0, 4))
     .filter((x, i, a) => a.indexOf(x === i))
     .map((year) => {
-      const entries = data
-        .filter((x) => ["CreativeWork", "Book", "Movie"].includes(x["@type"]))
-        .filter((work) => work.datePublished?.startsWith(year));
+      const entries = db.works.filter((work) =>
+        work.datePublished?.startsWith(year),
+      );
 
       return {
         url: `year/${year}`,
@@ -180,35 +154,29 @@ const pages = [
       };
     }),
   // Tags
-  ...data
-    .filter(
-      (entry) => entry["@type"] === "DefinedTerm" && !entry.inDefinedTermSet,
-    )
-    .map((tag) => {
-      const entries = data
-        .filter((x) => ["CreativeWork", "Book", "Movie"].includes(x["@type"]))
-        .filter((work) =>
-          work.keywords?.find((k) => k.identifier === tag.identifier),
-        );
+  ...db.tags.map((tag) => {
+    const entries = db.works.filter((work) =>
+      work.keywords?.find((k) => k.identifier === tag.identifier),
+    );
 
-      return {
-        url: `tag/${tag.identifier}`,
-        template: "pages/collection.njk",
-        data: {
-          title: `Texts tagged <strong>#${tag.name}</strong>`,
-          entries,
-        },
-      };
-    }),
+    return {
+      url: `tag/${tag.identifier}`,
+      template: "pages/collection.njk",
+      data: {
+        title: `Texts tagged <strong>#${tag.name}</strong>`,
+        entries,
+      },
+    };
+  }),
   // All entries
   {
     url: "all",
     template: "pages/collection.njk",
     data: {
       title: "All entries",
-      entries: data
-        .filter((x) => ["CreativeWork", "Book", "Movie"].includes(x["@type"]))
-        .sort((a, b) => a.name.trim().localeCompare(b.name.trim())),
+      entries: db.works.sort((a, b) =>
+        a.name.trim().localeCompare(b.name.trim()),
+      ),
     },
   },
 ];
