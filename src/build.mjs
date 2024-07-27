@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { dirname, resolve as pathResolve } from "path";
 import { copy } from "./lib/fs.mjs";
 import { DB } from "./lib/DB.mjs";
+import { buildResizeFilter } from "./lib/resizeFilter.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const baseDir = pathResolve(__dirname, "../public");
@@ -15,10 +16,21 @@ const nunjucksEnv = nunjucks.configure(pathResolve(__dirname, "views"), {
 const db = new DB();
 await db.init(pathResolve(__dirname, "../data.json"));
 
+nunjucksEnv.addGlobal("data", db.data);
 nunjucksEnv.addFilter("lookup", (id) =>
   db.data.find((x) => x.identifier === id),
 );
-nunjucksEnv.addGlobal("data", db.data);
+
+const resizeFilter = buildResizeFilter(baseDir);
+nunjucksEnv.addFilter(
+  "resize",
+  async function (thumbnailURL, size, callback) {
+    const out = await resizeFilter(thumbnailURL, size);
+
+    callback(null, out);
+  },
+  true,
+);
 
 const isByCreator = (identifier) => (work) =>
   (work.author && work.author.find((y) => y.identifier === identifier)) ||
@@ -189,14 +201,23 @@ const copies = {
 };
 
 await fs.rm(baseDir, { recursive: true, force: true });
+await fs.mkdir(pathResolve(baseDir, "images"), { recursive: true });
 
 for (const [from, to] of Object.entries(copies)) {
   await copy(pathResolve(__dirname, from), pathResolve(baseDir, to));
 }
 
-pages.forEach(async ({ url, template, data }) => {
-  const content = nunjucks.render(template, data);
+for (let { url, template, data } of pages) {
+  await new Promise((resolve, reject) => {
+    nunjucks.render(template, data, async function (err, content) {
+      if (err) reject(err);
+      await fs.mkdir(pathResolve(baseDir, url), { recursive: true });
+      await fs.writeFile(
+        pathResolve(baseDir, url, "index.html"),
+        String(content),
+      );
 
-  await fs.mkdir(pathResolve(baseDir, url), { recursive: true });
-  await fs.writeFile(pathResolve(baseDir, url, "index.html"), content);
-});
+      resolve(1);
+    });
+  });
+}

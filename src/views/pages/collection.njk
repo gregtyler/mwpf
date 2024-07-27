@@ -22,7 +22,7 @@
         <div
           class="c-tile"
           {% if entry.thumbnailUrl %}
-            style="background-image: url('{{ entry.thumbnailUrl }}')"
+            style="background-image: url('{{ entry.thumbnailUrl | resize(500) }}')"
           {% endif %}
         >
           <div class="c-tile__contents">
