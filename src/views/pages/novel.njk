@@ -178,7 +178,7 @@
       <img
         property="thumbnail"
         class="c-entry__image"
-        src="{{ novel.thumbnailUrl }}"
+        src="{{ novel.thumbnailUrl | resize(500) }}"
         alt="Front cover of {{ novel.name }}"
       />
     {% endif %}
