@@ -3,7 +3,7 @@ import nunjucks from "nunjucks";
 import { fileURLToPath } from "url";
 import { dirname, resolve as pathResolve } from "path";
 import { copy } from "./lib/fs.mjs";
-import { DB } from "./lib/queries.mjs";
+import { DB } from "./lib/DB.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const baseDir = pathResolve(__dirname, "../public");
