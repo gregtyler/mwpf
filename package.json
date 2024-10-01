@@ -15,6 +15,6 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.4",
-    "prettier-plugin-jinja-template": "^1.4.1"
+    "prettier-plugin-jinja-template": "^2.0.0"
   }
 }
