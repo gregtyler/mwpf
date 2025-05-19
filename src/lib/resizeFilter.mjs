@@ -19,10 +19,14 @@ export function buildResizeFilter(baseDir) {
     const response = await fetch(thumbnailURL);
 
     // Resize image
-    const imageBuffer = await readableStreamToBuffer(response.body);
-    await sharp(imageBuffer)
-      .resize(width)
-      .toFile(path.resolve(baseDir, "images", newName));
+    try {
+      const imageBuffer = await readableStreamToBuffer(response.body);
+      await sharp(imageBuffer)
+        .resize(width)
+        .toFile(path.resolve(baseDir, "images", newName));
+    } catch (err) {
+      console.error(`Error processing image ${thumbnailURL}: ${err}`);
+    }
 
     // Return file name
     return `/images/${newName}`;
