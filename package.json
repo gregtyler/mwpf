@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nodemon -e mjs,njk,css,js -i public ./src/build.mjs",
     "download": "node ./src/download.js ./data.json",
+    "download-local": "node --env-file .env ./src/download.js ./data.json",
     "build": "npm run download && node ./src/build.mjs"
   },
   "license": "MIT",
