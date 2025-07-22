@@ -46,30 +46,38 @@ async function main() {
         if (fields.filmDirector) type = "Movie";
         if (fields.illustrator_2) type = "Book";
 
-        return new Thing(type, {
-          identifier: sys.id,
-          name: fields.title,
-          thumbnailUrl: fields?.coverImage?.fields?.file.url ?? null,
-          author: arrayToRefs(fields.author, "Person"),
-          genre: fields.genre_2
-            ? fields.genre_2.map((g) => g.fields.genre)
-            : null,
-          publisher: arrayToRefs(fields.publisher, "Organization"),
-          provider: arrayToRefs(fields.distributor, "Organization"),
-          datePublished: fields.year ? `${fields.year}-01-01` : null,
-          keywords: fields.tags
-            ? fields.tags.map(
-                (t) => new Thing("DefinedTerm", { identifier: t.sys.id }),
-              )
-            : null,
-          comment: fields.notes
-            ? new Thing("Comment", { text: fields.notes })
-            : null,
-          citation: arrayToRefs(fields.relatedTexts_2, "CreativeWork"),
-          url: fields.link,
-          director: arrayToRefs(fields.filmDirector, "Person"),
-          illustrator: arrayToRefs(fields.illustrator_2, "Person"),
-        });
+        try {
+          return new Thing(type, {
+            identifier: sys.id,
+            name: fields.title,
+            thumbnailUrl: fields?.coverImage?.fields?.file.url ?? null,
+            author: arrayToRefs(fields.author, "Person"),
+            genre: fields.genre_2
+              ? fields.genre_2
+                  .filter((t) => t.sys.type === "Entry")
+                  .map((g) => g.fields?.genre)
+              : null,
+            publisher: arrayToRefs(fields.publisher, "Organization"),
+            provider: arrayToRefs(fields.distributor, "Organization"),
+            datePublished: fields.year ? `${fields.year}-01-01` : null,
+            keywords: fields.tags
+              ? fields.tags
+                  .filter((t) => t.sys.type === "Entry")
+                  .map(
+                    (t) => new Thing("DefinedTerm", { identifier: t.sys.id }),
+                  )
+              : null,
+            comment: fields.notes
+              ? new Thing("Comment", { text: fields.notes })
+              : null,
+            citation: arrayToRefs(fields.relatedTexts_2, "CreativeWork"),
+            url: fields.link,
+            director: arrayToRefs(fields.filmDirector, "Person"),
+            illustrator: arrayToRefs(fields.illustrator_2, "Person"),
+          });
+        } catch (e) {
+          throw new Error(`(reading ${fields.title ?? sys.id}): ${e.stack}`);
+        }
       } else if (contentType === "author") {
         return new Thing("Person", {
           identifier: sys.id,
