@@ -211,6 +211,13 @@ for (let { url, template, data } of pages) {
   await new Promise((resolve, reject) => {
     nunjucks.render(template, data, async function (err, content) {
       if (err) reject(err);
+
+      if (url === "404") {
+        await fs.writeFile(pathResolve(baseDir, "404.html"), String(content));
+        resolve(1);
+        return;
+      }
+
       await fs.mkdir(pathResolve(baseDir, url), { recursive: true });
       await fs.writeFile(
         pathResolve(baseDir, url, "index.html"),
